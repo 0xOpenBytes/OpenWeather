@@ -1,11 +1,10 @@
 <div align="center">
-  <img src="https://openbytes.dev/assets/projects/images/ios-OpenWeather-icon.png" alt="Icon representing the OpenBytes iOS-OpenWeather template project." width="35%"/>
-  <h1>iOS-Base</h1>
+  <img src="https://openbytes.dev/assets/projects/images/ios-base-icon.png" alt="Icon representing the OpenBytes ios-base project." width="35%"/>
+  <h1>OpenWeather</h1>
   <h3>The OpenBytes template for iOS projects using SwiftUI</h3>
-  <a href="https://github.com/0xOpenBytes/ios-OpenWeather/blob/main/LICENSE">
+  <a href="https://github.com/0xOpenBytes/OpenWeather/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License"/>
   </a>
-  <img src="https://img.shields.io/github/v/release/0xOpenBytes/ios-OpenWeather"/>
   <a href="https://discord.gg/HUmaDXVsW7">
     <img src="https://img.shields.io/discord/933406727150391376" alt="Community Chat"/>
   </a>
