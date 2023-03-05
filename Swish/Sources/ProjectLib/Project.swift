@@ -9,7 +9,7 @@ public struct Project {
         let filename: String
         let header: String
         
-        if "BASE".lowercased() == "base"  {
+        if "BASE".lowercased() == "OpenWeather"  {
             filename = "OpenBytesHeader.txt"
         } else {
             filename = "StandardHeader.txt"
@@ -24,6 +24,6 @@ public struct Project {
         ) ?? ""
         
         try sh(.terminal, "xcodegen")
-        try shq(.terminal, "echo '\(header)' > base.xcodeproj/xcshareddata/IDETemplateMacros.plist")
+        try shq(.terminal, "echo '\(header)' > OpenWeather.xcodeproj/xcshareddata/IDETemplateMacros.plist")
     }
 }

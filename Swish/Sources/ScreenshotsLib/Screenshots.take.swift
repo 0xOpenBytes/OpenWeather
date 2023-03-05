@@ -8,7 +8,7 @@ extension Screenshots {
 
     try Device.allCases.forEach { device in
       try sh(.file(logsPath + "/\(device.name).build.log"), """
-        xcodebuild -project base.xcodeproj -scheme Screenshots -destination 'platform=iOS Simulator,name=\(device.simulatorName)' -derivedDataPath "\(derivedDataPath)" test
+        xcodebuild -project OpenWeather.xcodeproj -scheme Screenshots -destination 'platform=iOS Simulator,name=\(device.simulatorName)' -derivedDataPath "\(derivedDataPath)" test
         """)
 
       let xcresultPath = try findLatestXCResult(in: derivedDataPath)

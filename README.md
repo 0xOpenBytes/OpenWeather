@@ -1,11 +1,11 @@
 <div align="center">
-  <img src="https://openbytes.dev/assets/projects/images/ios-base-icon.png" alt="Icon representing the OpenBytes iOS-base template project." width="35%"/>
+  <img src="https://openbytes.dev/assets/projects/images/ios-OpenWeather-icon.png" alt="Icon representing the OpenBytes iOS-OpenWeather template project." width="35%"/>
   <h1>iOS-Base</h1>
   <h3>The OpenBytes template for iOS projects using SwiftUI</h3>
-  <a href="https://github.com/0xOpenBytes/ios-base/blob/main/LICENSE">
+  <a href="https://github.com/0xOpenBytes/ios-OpenWeather/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License"/>
   </a>
-  <img src="https://img.shields.io/github/v/release/0xOpenBytes/ios-base"/>
+  <img src="https://img.shields.io/github/v/release/0xOpenBytes/ios-OpenWeather"/>
   <a href="https://discord.gg/HUmaDXVsW7">
     <img src="https://img.shields.io/discord/933406727150391376" alt="Community Chat"/>
   </a>
@@ -16,7 +16,7 @@
 
 ### Structure
 
-- base
+- OpenWeather
   - App: SwiftUI App and Views
   - Data
     - Mock: Static mock data and json reading functionality.
@@ -35,7 +35,7 @@
   - Preview Content
   - Settings: Shared app data and state.
   - Utilities: Miscellaneous app utilities.
-- baseTests
+- OpenWeatherTests
   - Adapters: Test Network to Device and Device to Network transformations.
   - Persistence: Tests for Persistence and Caching.
   - UserRegistration: Tests for register using ViewModels and DI.
@@ -61,7 +61,7 @@ Learn more about [Swish](https://www.github.com/FullQueueDeveloper/Swish) and [X
 
 ### Renaming
 
-There are some scripts to help rename base to whatever project name you want.
+There are some scripts to help rename OpenWeather to whatever project name you want.
 
 - Clone the templated repository
 - run `./rename.sh`

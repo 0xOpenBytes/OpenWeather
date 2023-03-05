@@ -11,8 +11,8 @@ else {
   fatalError("Missing some secrets, `APPLE_TEAM_ID`, `APPLOADER_USERNAME`, and `APPLOADER_PASSWORD`. Either add these to your environment or modify this script to provide these values in a different way.")
 }
 
-let appStore = try AppStore(project: "base.xcodeproj",
-                            scheme: "base")
+let appStore = try AppStore(project: "OpenWeather.xcodeproj",
+                            scheme: "OpenWeather")
 try appStore.build(appleTeamID: appleTeamID)
 try appStore.upload(credential:
                       LiteralPasswordCredential(

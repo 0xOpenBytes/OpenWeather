@@ -1,6 +1,6 @@
-name: base
+name: OpenWeather
 options:
-  bundleIdPrefix: com.base
+  bundleIdPrefix: com.OpenWeather
 packages:
   Fork:
     url: https://github.com/0xLeif/Fork
@@ -15,29 +15,29 @@ packages:
     url: https://github.com/0xOpenBytes/c
     from: 3.0.0
 schemes:
-  base:
+  OpenWeather:
     build:
       targets:
-        base: all
-        baseUITests: [run, test]
+        OpenWeather: all
+        OpenWeatherUITests: [run, test]
   Screenshots:
     build:
       targets:
-        base: all
-        baseUITests: [run, test]
+        OpenWeather: all
+        OpenWeatherUITests: [run, test]
     test:
       targets:
-        - baseUITests
+        - OpenWeatherUITests
     run:
       environmentVariables:
         SCREENSHOTS: "YES"
 targets:
-  base:
+  OpenWeather:
     scheme:
       testTargets:
-        - baseTests
+        - OpenWeatherTests
     info:
-      path: base/Info.plist
+      path: OpenWeather/Info.plist
       properties:
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UILaunchScreen: [UILaunchScreen: []]
@@ -45,8 +45,8 @@ targets:
     platform: iOS
     deploymentTarget: "16.0"
     sources:
-        - path: base
-          name: base
+        - path: OpenWeather
+          name: OpenWeather
           excludes:
             - "Swish"
     dependencies:
@@ -63,31 +63,31 @@ targets:
           else
           echo "warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint"
           fi
-        basedOnDependencyAnalysis: false
+        OpenWeatherdOnDependencyAnalysis: false
 
-  baseTests:
+  OpenWeatherTests:
     type: bundle.unit-test
     platform: iOS
     deploymentTarget: "16.0"
-    sources: [baseTests]
+    sources: [OpenWeatherTests]
     info:
-      path: baseTests/Info.plist
+      path: OpenWeatherTests/Info.plist
     dependencies:
-      - target: base
-  baseUITests:
+      - target: OpenWeather
+  OpenWeatherUITests:
     type: bundle.ui-testing
     platform: iOS
     deploymentTarget: "16.0"
-    sources: [baseUITests]
+    sources: [OpenWeatherUITests]
     info:
-      path: baseUITests/Info.plist
+      path: OpenWeatherUITests/Info.plist
       properties:
         CFBundlePackageType: $(PRODUCT_BUNDLE_PACKAGE_TYPE)
     settings:
-      TEST_TARGET_NAME: base
+      TEST_TARGET_NAME: OpenWeather
       CODE_SIGN_STYLE: Automatic
       CURRENT_PROJECT_VERSION: 1
       MARKETING_VERSION: "1.0"
       TARGETED_DEVICE_FAMILY: 1
       GENERATE_INFOPLIST_FILE: YES
-      PRODUCT_BUNDLE_IDENTIFIER: com.base.UITests
+      PRODUCT_BUNDLE_IDENTIFIER: com.OpenWeather.UITests

@@ -25,11 +25,11 @@ jobs:
         run: swish xcodeproj
       - name: Build
         run: >
-          xcodebuild build -project base.xcodeproj -scheme base clean
+          xcodebuild build -project OpenWeather.xcodeproj -scheme OpenWeather clean
           build -sdk iphoneos CODE_SIGNING_ALLOWED=No
       - name: Tests
         run: >
-          xcodebuild test -project base.xcodeproj -scheme base clean
+          xcodebuild test -project OpenWeather.xcodeproj -scheme OpenWeather clean
           build -sdk iphoneos -destination "platform=iOS
           Simulator,OS=16.1,name=iPhone 14 Pro Max" CODE_SIGNING_ALLOWED=No
       - name: Screenshots
