@@ -12,7 +12,7 @@ import CoreLocation
 extension WeatherProviding {
     var weatherService: WeatherService { .shared }
 
-    func currentWeather(for location: CLLocation) async throws -> WeatherResponse {
+    func weather(for location: CLLocation) async throws -> WeatherResponse {
         let weather = try await weatherService.weather(for: location)
         return WeatherResponse(weather: weather)
     }

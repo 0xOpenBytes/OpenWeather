@@ -9,11 +9,13 @@ import Foundation
 
 final class CurrentWeatherViewModel: ObservableObject, ErrorHandling {
     private var currentWeatherProviding: CurrentWeatherProviding
+    private var currentLocationProviding: CurrentLocationProviding
 
     var errorHandler: ErrorHandler
 
     init(
         currentWeatherProviding: CurrentWeatherProviding,
+        currentLocationProviding: CurrentLocationProviding,
         errorHandler: ErrorHandler = ErrorHandler(
             plugins: [
                 ToastErrorPlugin()
@@ -21,6 +23,7 @@ final class CurrentWeatherViewModel: ObservableObject, ErrorHandling {
         )
     ) {
         self.currentWeatherProviding = currentWeatherProviding
+        self.currentLocationProviding = currentLocationProviding
         self.errorHandler = errorHandler
     }
 }

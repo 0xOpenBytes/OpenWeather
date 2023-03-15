@@ -16,7 +16,7 @@ protocol CurrentWeatherProviding {
 
 struct CurrentWeatherProvider: CurrentWeatherProviding, WeatherProviding {
     func currentWeather(for location: CLLocation) async throws -> DeviceWeather {
-        let response: WeatherResponse = try await currentWeather(for: location)
+        let response = try await weather(for: location)
 
         return try WeatherAdapter.device(from: response.weather)
     }
@@ -24,6 +24,20 @@ struct CurrentWeatherProvider: CurrentWeatherProviding, WeatherProviding {
 
 struct MockCurrentWeatherProvider: CurrentWeatherProviding, WeatherProviding {
     func currentWeather(for location: CLLocation) async throws -> DeviceWeather {
-        return DeviceWeather()
+        return DeviceWeather(
+            currentTemperature: .init(value: 0, unit: .celsius),
+            realFeel: .init(value: 0, unit: .celsius),
+            wind: DeviceWind(
+                direction: .init(value: 0, unit: .degrees),
+                speed: .init(value: 0, unit: .kilometersPerHour),
+                gust: nil),
+            hourlyForecast: [
+                DeviceHourlyForecast(
+                    date: .now,
+                    temperature: .init(value: 0, unit: .celsius),
+                    symbolName: "Cloud"
+                )
+            ]
+        )
     }
 }

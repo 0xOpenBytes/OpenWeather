@@ -10,6 +10,25 @@ import WeatherKit
 
 enum WeatherAdapter: Adaptable {
     static func device(from: Weather) throws -> DeviceWeather {
-        return DeviceWeather()
+        let currentWeather = from.currentWeather
+        let wind = from.currentWeather.wind
+        let hourlyForecast = from.hourlyForecast
+
+        return DeviceWeather(
+            currentTemperature: currentWeather.temperature,
+            realFeel: currentWeather.apparentTemperature,
+            wind: DeviceWind(
+                direction: wind.direction,
+                speed: wind.speed,
+                gust: wind.gust
+            ),
+            hourlyForecast: hourlyForecast.map {
+                DeviceHourlyForecast(
+                    date: $0.date,
+                    temperature: $0.temperature,
+                    symbolName: $0.symbolName
+                )
+            }
+        )
     }
 }

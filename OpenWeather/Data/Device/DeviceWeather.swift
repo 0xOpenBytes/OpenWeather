@@ -9,4 +9,20 @@ import SwiftUI
 
 struct DeviceWeather: Identifiable {
     let id = UUID()
+    let currentTemperature: Measurement<UnitTemperature>
+    let realFeel: Measurement<UnitTemperature>
+    let wind: DeviceWind
+    let hourlyForecast: [DeviceHourlyForecast]
+}
+
+struct DeviceWind {
+    let direction: Measurement<UnitAngle>
+    let speed: Measurement<UnitSpeed>
+    let gust: Measurement<UnitSpeed>?
+}
+
+struct DeviceHourlyForecast {
+    let date: Date
+    let temperature: Measurement<UnitTemperature>
+    let symbolName: String
 }
