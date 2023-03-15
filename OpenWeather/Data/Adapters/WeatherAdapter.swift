@@ -17,6 +17,7 @@ enum WeatherAdapter: Adaptable {
         return DeviceWeather(
             currentTemperature: currentWeather.temperature,
             realFeel: currentWeather.apparentTemperature,
+            uv: currentWeather.uvIndex.value,
             symbolName: currentWeather.symbolName,
             wind: DeviceWind(
                 direction: wind.direction,

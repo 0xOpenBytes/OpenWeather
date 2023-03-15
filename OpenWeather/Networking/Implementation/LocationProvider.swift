@@ -59,6 +59,6 @@ struct LocationProvider: LocationProviding {
 
 struct MockLocationProvider: LocationProviding {
     func locationName(for location: CLLocation) async throws -> String {
-        return "location-name"
+        return "London`"
     }
 }

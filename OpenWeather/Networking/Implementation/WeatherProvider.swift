@@ -27,17 +27,19 @@ struct WeatherProvider: WeatherProviding {
 struct MockWeatherProvider: WeatherProviding {
     func currentWeather(for location: CLLocation) async throws -> DeviceWeather {
         return DeviceWeather(
-            currentTemperature: .init(value: 0, unit: .celsius),
-            realFeel: .init(value: 0, unit: .celsius),
+            currentTemperature: .init(value: 9.01, unit: .celsius),
+            realFeel: .init(value: 10.2, unit: .celsius),
+            uv: 1,
+            symbolName: "cloud.hail",
             wind: DeviceWind(
                 direction: .init(value: 0, unit: .degrees),
-                speed: .init(value: 0, unit: .kilometersPerHour),
+                speed: .init(value: 10, unit: .kilometersPerHour),
                 gust: nil),
             hourlyForecast: [
                 DeviceHourlyForecast(
                     date: .now,
                     temperature: .init(value: 0, unit: .celsius),
-                    symbolName: "Cloud"
+                    symbolName: "cloud"
                 )
             ]
         )

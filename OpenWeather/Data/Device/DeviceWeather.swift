@@ -11,6 +11,7 @@ struct DeviceWeather: Identifiable {
     let id = UUID()
     let currentTemperature: Measurement<UnitTemperature>
     let realFeel: Measurement<UnitTemperature>
+    let uv: Int
     let symbolName: String
     let wind: DeviceWind
     let hourlyForecast: [DeviceHourlyForecast]
