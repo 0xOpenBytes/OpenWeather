@@ -8,7 +8,7 @@
 import Foundation
 import CoreLocation
 
-private enum LocationProvidingError: LocalizedError {
+enum LocationProvidingError: LocalizedError {
     case noSuchPlace
     case failure(reason: String)
 
@@ -18,49 +18,6 @@ private enum LocationProvidingError: LocalizedError {
             return "\(#fileID): No such place"
         case .failure(let reason):
             return "\(#fileID): Failure: \(reason)"
-        }
-    }
-}
-
-extension LocationProviding {
-    func locationName(for location: CLLocation) async throws -> LocationNameResponse {
-        return try await withCheckedThrowingContinuation { continuation in
-            locationName(
-                for: location,
-                completion: { placemark, error in
-                    if let error = error {
-                        continuation.resume(
-                            throwing: LocationProvidingError.failure(reason: error.localizedDescription)
-                        )
-                    } else {
-                        if let locationName = placemark?.name {
-                            continuation.resume(
-                                returning: LocationNameResponse(name: locationName)
-                            )
-                        } else {
-                            continuation.resume(
-                                throwing: LocationProvidingError.noSuchPlace
-                            )
-                        }
-                    }
-                }
-            )
-        }
-    }
-
-    private func locationName(
-        for location: CLLocation,
-        completion: @escaping (CLPlacemark?, Error?) -> Void
-    ) {
-
-        let geocoder = CLGeocoder()
-
-        geocoder.reverseGeocodeLocation(location) { placemarks, error in
-            if let error = error as? NSError {
-                completion(nil, error)
-            } else {
-                completion(placemarks?.first, nil)
-            }
         }
     }
 }

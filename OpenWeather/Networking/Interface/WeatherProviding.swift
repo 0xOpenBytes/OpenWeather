@@ -9,5 +9,5 @@ import Foundation
 import CoreLocation
 
 protocol WeatherProviding {
-    func weather(for location: CLLocation) async throws -> WeatherResponse
+    func currentWeather(for location: CLLocation) async throws -> DeviceWeather
 }
