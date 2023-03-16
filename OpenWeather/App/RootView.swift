@@ -22,7 +22,6 @@ struct RootView: View {
         case home
         case search
         case profile
-        case weather
     }
 
     @ObservedObject var navigation: Navigation
@@ -30,7 +29,12 @@ struct RootView: View {
     var body: some View {
         TabView(selection: $navigation.tab) {
             OpenBytesNavigationView(path: navigation.home) {
-                HomeScreen()
+                HomeScreen(
+                    viewModel: HomeViewModel(
+                        weatherProviding: MockWeatherProvider(),
+                        locationProviding: MockLocationProvider()
+                    )
+                )
             }
             .tag(Tab.home)
             .tabItem {
@@ -55,20 +59,6 @@ struct RootView: View {
                 Image(systemName: "person")
                 Text("Profile")
             }
-
-            OpenBytesNavigationView(path: navigation.weather) {
-                WeatherDetailsScreen(
-                    viewModel: .init(
-                        weatherProviding: MockWeatherProvider(),
-                        locationProviding: MockLocationProvider()
-                    )
-                )
-            }
-            .tag(Tab.weather)
-            .tabItem {
-                Image(systemName: "cloud.sun")
-                Text("Weather")
-            }
         }
     }
 }
@@ -79,7 +69,6 @@ struct RootView_Previews: PreviewProvider {
             navigation.home = OpenBytesNavigationPath(id: "home.preview", isPreview: true)
             navigation.search = OpenBytesNavigationPath(id: "search.preview", isPreview: true)
             navigation.profile = OpenBytesNavigationPath(id: "profile.preview", isPreview: true)
-            navigation.weather = OpenBytesNavigationPath(id: "weather.preview", isPreview: true)
 
             return RootView(navigation: navigation)
         }
