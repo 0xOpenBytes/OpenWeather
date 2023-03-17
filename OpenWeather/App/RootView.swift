@@ -21,6 +21,7 @@ struct RootView: View {
     enum Tab {
         case home
         case search
+        case summary
         case profile
     }
 
@@ -49,6 +50,20 @@ struct RootView: View {
             .tabItem {
                 Image(systemName: "magnifyingglass")
                 Text("Search")
+            }
+
+            OpenBytesNavigationView(path: navigation.summary) {
+                SummaryScreen(
+                    viewModel: SummaryViewModel(
+                        weatherProviding: MockWeatherProvider(),
+                        locationProviding: MockLocationProvider()
+                    )
+                )
+            }
+            .tag(Tab.summary)
+            .tabItem {
+                Image(systemName: "cloud.fog.circle")
+                Text("Summary")
             }
 
             OpenBytesNavigationView(path: navigation.profile) {

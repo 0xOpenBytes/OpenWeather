@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import CoreLocation
 
 extension Mock {
     static let users: [User] = [
@@ -22,4 +23,81 @@ extension Mock {
         User(username: "Green User", email: "2@mock.dev", color: .green),
         User(username: "Blue User", email: "3@mock.dev", color: .blue)
     ]
+
+    static let londonLocation: CLLocation = .london
+    static let londonWeather: DeviceWeather = .london
+
+    static let locationWeatherMap: [CLLocation : DeviceWeather] = [
+        .london : .london,
+        .cairo : .cairo,
+        .newYork: .newYork
+    ]
+
+    static let locationNameMap: [CLLocation : String] = [
+        .london : "London",
+        .cairo : "Cairo",
+        .newYork : "New York"
+    ]
+}
+
+extension CLLocation {
+    static let london: CLLocation = .init(latitude: 51.5072, longitude: 0.1276)
+    static let cairo: CLLocation = .init(latitude: 30.0444, longitude: 31.2357)
+    static let newYork: CLLocation = .init(latitude: 40.7128, longitude: 74.0060)
+}
+
+extension DeviceWeather {
+    static let london: DeviceWeather = .init(
+        currentTemperature: .init(value: 11, unit: .celsius),
+        realFeel: .init(value: 10.2, unit: .celsius),
+        uv: 1,
+        symbolName: "cloud.drizzle.fill",
+        wind: DeviceWind(
+            direction: .init(value: 0, unit: .degrees),
+            speed: .init(value: 10, unit: .kilometersPerHour),
+            gust: nil),
+        hourlyForecast: [
+            DeviceHourlyForecast(
+                date: .now,
+                temperature: .init(value: 0, unit: .celsius),
+                symbolName: "cloud"
+            )
+        ]
+    )
+    
+    static let cairo: DeviceWeather = .init(
+        currentTemperature: .init(value: 18, unit: .celsius),
+        realFeel: .init(value: 10.2, unit: .celsius),
+        uv: 1,
+        symbolName: "sun.min",
+        wind: DeviceWind(
+            direction: .init(value: 0, unit: .degrees),
+            speed: .init(value: 10, unit: .kilometersPerHour),
+            gust: nil),
+        hourlyForecast: [
+            DeviceHourlyForecast(
+                date: .now,
+                temperature: .init(value: 0, unit: .celsius),
+                symbolName: "cloud"
+            )
+        ]
+    )
+    
+    static let newYork: DeviceWeather = .init(
+        currentTemperature: .init(value: 9, unit: .celsius),
+        realFeel: .init(value: 10.2, unit: .celsius),
+        uv: 1,
+        symbolName: "smoke.fill",
+        wind: DeviceWind(
+            direction: .init(value: 0, unit: .degrees),
+            speed: .init(value: 10, unit: .kilometersPerHour),
+            gust: nil),
+        hourlyForecast: [
+            DeviceHourlyForecast(
+                date: .now,
+                temperature: .init(value: 0, unit: .celsius),
+                symbolName: "cloud"
+            )
+        ]
+    )
 }

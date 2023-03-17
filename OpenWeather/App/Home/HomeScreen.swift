@@ -18,7 +18,7 @@ import SwiftUI
 import CoreLocation
 
 struct HomeScreen: View {
-    private let location: CLLocation = .init(latitude: 51.5072, longitude: 0.1276)
+    private let location: CLLocation = Mock.londonLocation
 
     @ObservedObject var settings: AppSettings = AppSettings.shared
     @ObservedObject var viewModel: HomeViewModel
