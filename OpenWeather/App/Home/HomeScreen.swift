@@ -15,27 +15,75 @@
 //
 
 import SwiftUI
+import CoreLocation
 
 struct HomeScreen: View {
+    private let location: CLLocation = Mock.londonLocation
+
     @ObservedObject var settings: AppSettings = AppSettings.shared
+    @ObservedObject var viewModel: HomeViewModel
+
+    init(viewModel: HomeViewModel) {
+        self.viewModel = viewModel
+    }
 
     var body: some View {
         VStack {
-            ImageView(
-                url: URL(string: "https://avatars.githubusercontent.com/u/92551192?s=200&v=4"),
-                content: { image in
-                    image
-                        .resizable()
-                        .frame(width: 120, height: 120)
-                        .padding()
-                },
-                placeholder: {
-                    ProgressView()
-                        .foregroundColor(.accentColor)
-                        .frame(width: 120, height: 120)
-                        .padding()
+            VStack(spacing: 15) {
+                Image(systemName: viewModel.symbolName)
+                    .symbolRenderingMode(.monochrome)
+                    .foregroundColor(.gray)
+                    .font(.system(size: 100))
+                    .padding(.bottom, 20)
+
+                Text("Current Weather: \(viewModel.locationName)")
+                    .font(.title3)
+                    .fontWeight(.bold)
+
+                HStack {
+                    Text("\(viewModel.temperature)")
+                        .font(.system(size: 75))
+                        .fontWeight(.heavy)
+                        .foregroundColor(.blue)
                 }
-            )
+
+                HStack {
+                    VStack {
+                        Text("\(viewModel.windSpeed)")
+                            .fontWeight(.bold)
+                            .foregroundColor(.black)
+
+                        Text("Wind")
+                            .foregroundColor(.black)
+                    }
+                    .font(.system(size: 25))
+
+                    Spacer()
+
+                    VStack {
+                        Text("\(viewModel.uv)")
+                            .fontWeight(.bold)
+                            .foregroundColor(.black)
+
+                        Text("UV")
+                            .foregroundColor(.black)
+                    }
+                    .font(.system(size: 25))
+
+                    Spacer()
+
+                    VStack {
+                        Text("\(viewModel.realFeel)")
+                            .fontWeight(.bold)
+                            .foregroundColor(.black)
+
+                        Text("Feel")
+                            .foregroundColor(.black)
+                    }
+                    .font(.system(size: 25))
+                }
+                .padding(.horizontal, 50)
+            }
         }
         .navigationTitle("Hello, \(settings.user?.username ?? "World")!")
         .toolbar {
@@ -52,11 +100,19 @@ struct HomeScreen: View {
                 }
             )
         }
+        .onAppear {
+            viewModel.getWeather(for: location)
+        }
     }
 }
 
 struct HomeScreen_Previews: PreviewProvider {
     static var previews: some View {
-        HomeScreen()
+        HomeScreen(
+            viewModel: HomeViewModel(
+                weatherProviding: MockWeatherProvider(),
+                locationProviding: MockLocationProvider()
+            )
+        )
     }
 }

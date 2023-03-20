@@ -23,7 +23,7 @@ public final class Navigation: ObservableObject {
     var home: OpenBytesNavigationPath = OpenBytesNavigationPath.load(id: "home")
     var search: OpenBytesNavigationPath = OpenBytesNavigationPath.load(id: "search")
     var profile: OpenBytesNavigationPath = OpenBytesNavigationPath.load(id: "profile")
-    var weather: OpenBytesNavigationPath = OpenBytesNavigationPath.load(id: "weather")
+    var summary: OpenBytesNavigationPath = OpenBytesNavigationPath.load(id: "summary")
 
     @Published var tab: RootView.Tab = .home
 
@@ -33,7 +33,7 @@ public final class Navigation: ObservableObject {
             case .home:     return navigation.home
             case .search:   return navigation.search
             case .profile:  return navigation.profile
-            case .weather:  return navigation.weather
+            case .summary:  return navigation.summary
             }
         }
     }
