@@ -64,7 +64,7 @@ extension DeviceWeather {
             )
         ]
     )
-    
+
     static let cairo: DeviceWeather = .init(
         currentTemperature: .init(value: 18, unit: .celsius),
         realFeel: .init(value: 10.2, unit: .celsius),
@@ -82,7 +82,7 @@ extension DeviceWeather {
             )
         ]
     )
-    
+
     static let newYork: DeviceWeather = .init(
         currentTemperature: .init(value: 9, unit: .celsius),
         realFeel: .init(value: 10.2, unit: .celsius),
