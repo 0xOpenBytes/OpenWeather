@@ -6,7 +6,12 @@
 //
 
 import Foundation
+import CoreLocation
 
 struct LocationNameResponse {
     let name: String
+}
+
+struct LocationSearchResponse {
+    let result: [NetworkLocation]
 }
