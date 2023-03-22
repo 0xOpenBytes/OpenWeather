@@ -10,4 +10,5 @@ import CoreLocation
 
 protocol LocationProviding {
     func locationName(for location: CLLocation) async throws -> String
+    func locations(for address: String) async throws -> [DeviceLocation]
 }

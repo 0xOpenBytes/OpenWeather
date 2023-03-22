@@ -17,57 +17,33 @@
 import OpenBytesNavigation
 import SwiftUI
 
+struct LocationResultItem: View {
+    let name: String
+
+    var body: some View {
+        VStack {
+            Text(name)
+
+            // ...
+        }
+    }
+}
+
 struct SearchScreen: View {
+    @State private var searchText: String = ""
+    @ObservedObject var viewModel: SearchViewModel
+
+    init(viewModel: SearchViewModel) {
+        self.viewModel = viewModel
+    }
+
     var body: some View {
         List {
-            Button(
-                action: { Navigation.path.push(Date()) },
-                label: { Text("Push") }
-            )
-
-            Button(
-                action: { Navigation.path.modal { Text("Modal") } },
-                label: { Text("Modal") }
-            )
-
-            Button(
-                action: {
-                    Navigation.path.alert(
-                        title: Text("Alert Title"),
-                        primaryButton: .default(Text("Done")),
-                        secondaryButton: .cancel()
-                    )
-                },
-                label: { Text("Alert") }
-            )
-
-            Button(
-                action: {
-                    Navigation.path.actionSheet(
-                        title: "Action Sheet Title",
-                        actions: {
-                            Button(
-                                action: { print("Hi") },
-                                label: { Text("Say Hi") }
-                            )
-                        },
-                        message: { Text("Action Sheet Message") }
-                    )
-                },
-                label: { Text("Action Sheet") }
-            )
-
-            Button {
-                Navigation.path.toast(
-                    title: "Toast Title",
-                    message: "This is a toast message and can be fairly long if needed.",
-                    style: .error
-                )
-            } label: {
-                Text("Toast Alert")
+            ForEach(viewModel.result) { location in
+                LocationResultItem(name: location.name)
             }
-
         }
+        .searchable(text: $searchText, prompt: "Search by name or zipcode")
         .navigationDestination(
             for: Date.self,
             destination: { date in
@@ -75,13 +51,20 @@ struct SearchScreen: View {
             }
         )
         .navigationTitle("Search")
+        .onChange(of: searchText) { newSearchText in
+            viewModel.getLocations(query: newSearchText)
+        }
     }
 }
 
 struct SearchScreen_Previews: PreviewProvider {
     static var previews: some View {
         OpenBytesNavigationView.preview {
-            SearchScreen()
+            SearchScreen(
+                viewModel: SearchViewModel(
+                    locationProviding: MockLocationProvider()
+                )
+            )
         }
     }
 }

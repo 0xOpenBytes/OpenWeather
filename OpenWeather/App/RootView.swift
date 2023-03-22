@@ -44,7 +44,11 @@ struct RootView: View {
             }
 
             OpenBytesNavigationView(path: navigation.search) {
-                SearchScreen()
+                SearchScreen(
+                    viewModel: SearchViewModel(
+                        locationProviding: MockLocationProvider()
+                    )
+                )
             }
             .tag(Tab.search)
             .tabItem {
