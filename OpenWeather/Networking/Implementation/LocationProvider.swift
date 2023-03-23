@@ -58,13 +58,7 @@ struct LocationProvider: LocationProviding {
     func locations(for address: String) async throws -> [DeviceLocation] {
         let response: LocationSearchResponse = try await locations(for: address)
 
-        return response.result
-            .map {
-                DeviceLocation(
-                    name: $0.name,
-                    location: $0.location
-                )
-            }
+        return response.result.map(LocationAdapter.device(from:))
     }
 
     private func locations(for address: String) async throws -> LocationSearchResponse {
@@ -123,7 +117,7 @@ struct MockLocationProvider: LocationProviding {
 
         return Mock.locationsMap
             .compactMap { (key, value) -> DeviceLocation? in
-                return key.lowercased().starts(with: address.lowercased()) ? value : nil
+                return key.lowercased().contains(address.lowercased()) ? value : nil
             }
     }
 }

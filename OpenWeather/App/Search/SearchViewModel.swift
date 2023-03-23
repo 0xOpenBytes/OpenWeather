@@ -14,6 +14,7 @@ final class SearchViewModel: ObservableObject, ErrorHandling {
 
     var errorHandler: ErrorHandler
 
+    @Published var searchText: String = ""
     @Published var result: [DeviceLocation] = []
 
     init(
@@ -28,14 +29,20 @@ final class SearchViewModel: ObservableObject, ErrorHandling {
         self.errorHandler = errorHandler
     }
 
-    func getLocations(query: String) {
+    func getLocations() {
         task?.cancel()
 
         task = Task {
-            let result = try? await locationProviding.locations(for: query)
+            try? await Task.withCheckedCancellation {
+                do {
+                    let result = try await locationProviding.locations(for: searchText)
 
-            await MainActor.run {
-                self.result = result ?? []
+                    await MainActor.run {
+                        self.result = result
+                    }
+                } catch {
+                    errorHandler.handle(error: error)
+                }
             }
         }
     }

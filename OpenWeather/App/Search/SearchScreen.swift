@@ -43,7 +43,13 @@ struct SearchScreen: View {
                 LocationResultItem(name: location.name)
             }
         }
-        .searchable(text: $searchText, prompt: "Search by name or zipcode")
+        .searchable(
+            text: Binding<String>(
+                get: { viewModel.searchText },
+                set: { viewModel.searchText = $0 }
+            ),
+            prompt: "Search by name or zipcode"
+        )
         .navigationDestination(
             for: Date.self,
             destination: { date in
@@ -51,8 +57,10 @@ struct SearchScreen: View {
             }
         )
         .navigationTitle("Search")
-        .onChange(of: searchText) { newSearchText in
-            viewModel.getLocations(query: newSearchText)
+        .onReceive(
+            viewModel.$searchText.debounce(for: 0.300, scheduler: RunLoop.main)
+        ) { _ in
+            viewModel.getLocations()
         }
     }
 }

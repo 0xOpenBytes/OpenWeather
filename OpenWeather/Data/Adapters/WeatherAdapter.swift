@@ -9,7 +9,7 @@ import Foundation
 import WeatherKit
 
 enum WeatherAdapter: Adaptable {
-    static func device(from: Weather) throws -> DeviceWeather {
+    static func device(from: Weather) -> DeviceWeather {
         let currentWeather = from.currentWeather
         let wind = from.currentWeather.wind
         let hourlyForecast = from.hourlyForecast

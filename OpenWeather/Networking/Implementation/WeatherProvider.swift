@@ -15,7 +15,7 @@ struct WeatherProvider: WeatherProviding {
     func currentWeather(for location: CLLocation) async throws -> DeviceWeather {
         let response = try await weather(for: location)
 
-        return try WeatherAdapter.device(from: response.weather)
+        return WeatherAdapter.device(from: response.weather)
     }
 
     private func weather(for location: CLLocation) async throws -> WeatherResponse {
