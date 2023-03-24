@@ -38,12 +38,20 @@ extension Mock {
         .cairo : "Cairo",
         .newYork : "New York"
     ]
+
+    static let locationsMap: [String : DeviceLocation] = [
+        "London": DeviceLocation(name: "London", location: .london),
+        "4240120": DeviceLocation(name: "Manial Al-Rodha", location: .cairo),
+        "New York": DeviceLocation(name: "New York", location: .newYork),
+        "New Zealand": DeviceLocation(name: "New Zealand", location: .newZealand)
+    ]
 }
 
 extension CLLocation {
     static let london: CLLocation = .init(latitude: 51.5072, longitude: 0.1276)
     static let cairo: CLLocation = .init(latitude: 30.0444, longitude: 31.2357)
     static let newYork: CLLocation = .init(latitude: 40.7128, longitude: 74.0060)
+    static let newZealand: CLLocation = .init(latitude: 40.9006, longitude: 174.8860)
 }
 
 extension DeviceWeather {

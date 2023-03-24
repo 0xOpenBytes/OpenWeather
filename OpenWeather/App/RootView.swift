@@ -30,6 +30,7 @@ struct RootView: View {
     var body: some View {
         TabView(selection: $navigation.tab) {
             OpenBytesNavigationView(path: navigation.home) {
+                // TODO: Update to Production
                 HomeScreen(
                     viewModel: HomeViewModel(
                         weatherProviding: MockWeatherProvider(),
@@ -44,7 +45,10 @@ struct RootView: View {
             }
 
             OpenBytesNavigationView(path: navigation.search) {
-                SearchScreen()
+                // TODO: Update to Production
+                SearchLocationScreen(
+                    viewModel: SearchLocationViewModel()
+                )
             }
             .tag(Tab.search)
             .tabItem {
@@ -53,6 +57,7 @@ struct RootView: View {
             }
 
             OpenBytesNavigationView(path: navigation.summary) {
+                // TODO: Update to Production
                 SummaryScreen(
                     viewModel: SummaryViewModel(
                         weatherProviding: MockWeatherProvider(),
