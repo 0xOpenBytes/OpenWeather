@@ -44,10 +44,7 @@ struct SearchScreen: View {
             }
         }
         .searchable(
-            text: Binding<String>(
-                get: { viewModel.searchText },
-                set: { viewModel.searchText = $0 }
-            ),
+            text: $viewModel.searchText,
             prompt: "Search by name or zipcode"
         )
         .navigationDestination(

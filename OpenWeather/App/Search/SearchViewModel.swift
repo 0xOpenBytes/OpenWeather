@@ -33,17 +33,21 @@ final class SearchViewModel: ObservableObject, ErrorHandling {
         task?.cancel()
 
         task = Task {
-            try? await Task.withCheckedCancellation {
-                do {
-                    let result = try await locationProviding.locations(for: searchText)
+            do {
+                guard let result = try await getLocations() else { return }
 
-                    await MainActor.run {
-                        self.result = result
-                    }
-                } catch {
-                    errorHandler.handle(error: error)
+                await MainActor.run {
+                    self.result = result
                 }
+            } catch {
+                errorHandler.handle(error: error)
             }
+        }
+    }
+
+    func getLocations() async throws -> [DeviceLocation]? {
+        try? await Task.withCheckedCancellation {
+            try await locationProviding.locations(for: searchText)
         }
     }
 }
