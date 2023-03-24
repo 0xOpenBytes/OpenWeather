@@ -58,7 +58,9 @@ final class SearchLocationViewModel: ViewModel<SearchLocationCapabilities, Searc
         searchSubscription = searchSubject
             .removeDuplicates()
             .debounce(for: 0.300, scheduler: RunLoop.main)
-            .sink(receiveValue: getLocations(searchText:))
+            .sink { [weak self] searchText in
+                self?.getLocations(searchText: searchText)
+            }
     }
 
     private func getLocations(searchText: String) {
