@@ -23,6 +23,10 @@ packages:
   OpenBytesNavigation:
     url: https://github.com/0xOpenBytes/OpenBytesNavigation
     from: 0.1.0
+  ViewModel:
+    url: https://github.com/0xOpenBytes/ViewModel.git
+    from: 0.1.0
+  
 schemes:
   OpenWeather:
     build:
@@ -66,6 +70,7 @@ targets:
       - package: Cache
       - package: Test
       - package: OpenBytesNavigation
+      - package: ViewModel
     postCompileScripts:
       - name: Swiftlint
         script: |
