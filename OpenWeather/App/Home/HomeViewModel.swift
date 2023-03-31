@@ -6,14 +6,34 @@
 //
 
 import Foundation
+import ViewModel
 import CoreLocation
 
-final class HomeViewModel: ObservableObject, ErrorHandling {
-    private var weatherProviding: WeatherProviding
-    private var locationProviding: LocationProviding
-    private var task: Task<Void, Never>?
+final class HomeViewModel: ViewModel<HomeCapable, HomeViewModel.Input, HomeViewModel.Content> {
+    struct Input: Equatable { }
 
-    var errorHandler: ErrorHandler
+    struct Content {
+        var locationName: String
+        var temperature: String
+        var symbolName: String
+        var realFeel: String
+        var uv: String
+        var windSpeed: String
+    }
+
+    override var content: Content {
+        Content(
+            locationName: locationName,
+            temperature: temperature,
+            symbolName: symbolName,
+            realFeel: realFeel,
+            uv: uv,
+            windSpeed: windSpeed
+        )
+    }
+
+    private var errorHandler: ErrorHandler
+    private var task: Task<Void, Never>?
 
     @Published var locationName: String = ""
     @Published var temperature: String = ""
@@ -23,30 +43,30 @@ final class HomeViewModel: ObservableObject, ErrorHandling {
     @Published var windSpeed: String = ""
 
     init(
-        weatherProviding: WeatherProviding,
-        locationProviding: LocationProviding,
+        capabilities: HomeCapable,
+        input: Input,
         errorHandler: ErrorHandler = ErrorHandler(
             plugins: [
                 ToastErrorPlugin()
             ]
         )
     ) {
-        self.weatherProviding = weatherProviding
-        self.locationProviding = locationProviding
         self.errorHandler = errorHandler
+
+        super.init(capabilities: capabilities, input: input)
     }
 
     func getWeather(for location: CLLocation) {
         task?.cancel()
 
         task = Task {
-            if let locatioName = try? await locationProviding.locationName(for: location) {
+            if let locatioName = try? await capabilities.locationName(for: location) {
                 await MainActor.run {
                     locationName = locatioName
                 }
             }
 
-            if let weather = try? await weatherProviding.currentWeather(for: location) {
+            if let weather = try? await capabilities.currentWeather(for: location) {
                 await MainActor.run {
                     temperature = weather.currentTemperature.formatted(
                         .measurement(width: .abbreviated, usage: .asProvided)
@@ -64,3 +84,89 @@ final class HomeViewModel: ObservableObject, ErrorHandling {
         }
     }
 }
+
+protocol HomeCapable: CurrentWeatherProviding, LocationNameProviding { }
+
+extension HomeCapable where Self == HomeCapabilities {
+    static var mock: Self {
+        HomeCapabilities(
+            locationProviding: MockLocationProvider(),
+            weatherProviding: MockWeatherProvider()
+        )
+    }
+}
+
+struct HomeCapabilities: HomeCapable {
+    private var locationProviding: LocationProviding
+    private var weatherProviding: WeatherProviding
+
+    init(locationProviding: LocationProviding, weatherProviding: WeatherProviding) {
+        self.locationProviding = locationProviding
+        self.weatherProviding = weatherProviding
+    }
+
+    func locationName(for location: CLLocation) async throws -> String {
+        try await locationProviding.locationName(for: location)
+    }
+
+    func currentWeather(for location: CLLocation) async throws -> DeviceWeather {
+        try await weatherProviding.currentWeather(for: location)
+    }
+}
+
+//final class HomeViewModel: ObservableObject, ErrorHandling {
+//    private var weatherProviding: WeatherProviding
+//    private var locationProviding: LocationProviding
+//    private var task: Task<Void, Never>?
+//
+//    var errorHandler: ErrorHandler
+//
+//    @Published var locationName: String = ""
+//    @Published var temperature: String = ""
+//    @Published var symbolName: String = ""
+//    @Published var realFeel: String = ""
+//    @Published var uv: String = ""
+//    @Published var windSpeed: String = ""
+//
+//    init(
+//        weatherProviding: WeatherProviding,
+//        locationProviding: LocationProviding,
+//        errorHandler: ErrorHandler = ErrorHandler(
+//            plugins: [
+//                ToastErrorPlugin()
+//            ]
+//        )
+//    ) {
+//        self.weatherProviding = weatherProviding
+//        self.locationProviding = locationProviding
+//        self.errorHandler = errorHandler
+//    }
+//
+//    func getWeather(for location: CLLocation) {
+//        task?.cancel()
+//
+//        task = Task {
+//            if let locatioName = try? await locationProviding.locationName(for: location) {
+//                await MainActor.run {
+//                    locationName = locatioName
+//                }
+//            }
+//
+//            if let weather = try? await weatherProviding.currentWeather(for: location) {
+//                await MainActor.run {
+//                    temperature = weather.currentTemperature.formatted(
+//                        .measurement(width: .abbreviated, usage: .asProvided)
+//                    )
+//                    symbolName = weather.symbolName
+//                    realFeel = weather.realFeel.formatted(
+//                        .measurement(width: .abbreviated, usage: .asProvided)
+//                    )
+//                    uv = "\(weather.uv)"
+//                    windSpeed = weather.wind.speed.formatted(
+//                        .measurement(width: .abbreviated, usage: .asProvided)
+//                    )
+//                }
+//            }
+//        }
+//    }
+//}

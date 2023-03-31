@@ -28,61 +28,63 @@ struct HomeScreen: View {
     }
 
     var body: some View {
-        VStack {
-            VStack(spacing: 15) {
-                Image(systemName: viewModel.symbolName)
-                    .symbolRenderingMode(.monochrome)
-                    .foregroundColor(.gray)
-                    .font(.system(size: 100))
-                    .padding(.bottom, 20)
+        viewModel.view { content in
+            VStack {
+                VStack(spacing: 15) {
+                    Image(systemName: content.symbolName)
+                        .symbolRenderingMode(.monochrome)
+                        .foregroundColor(.gray)
+                        .font(.system(size: 100))
+                        .padding(.bottom, 20)
 
-                Text("Current Weather: \(viewModel.locationName)")
-                    .font(.title3)
-                    .fontWeight(.bold)
+                    Text("Current Weather: \(content.locationName)")
+                        .font(.title3)
+                        .fontWeight(.bold)
 
-                HStack {
-                    Text("\(viewModel.temperature)")
-                        .font(.system(size: 75))
-                        .fontWeight(.heavy)
-                        .foregroundColor(.blue)
+                    HStack {
+                        Text("\(content.temperature)")
+                            .font(.system(size: 75))
+                            .fontWeight(.heavy)
+                            .foregroundColor(.blue)
+                    }
+
+                    HStack {
+                        VStack {
+                            Text("\(content.windSpeed)")
+                                .fontWeight(.bold)
+                                .foregroundColor(.black)
+
+                            Text("Wind")
+                                .foregroundColor(.black)
+                        }
+                        .font(.system(size: 25))
+
+                        Spacer()
+
+                        VStack {
+                            Text("\(content.uv)")
+                                .fontWeight(.bold)
+                                .foregroundColor(.black)
+
+                            Text("UV")
+                                .foregroundColor(.black)
+                        }
+                        .font(.system(size: 25))
+
+                        Spacer()
+
+                        VStack {
+                            Text("\(content.realFeel)")
+                                .fontWeight(.bold)
+                                .foregroundColor(.black)
+
+                            Text("Feel")
+                                .foregroundColor(.black)
+                        }
+                        .font(.system(size: 25))
+                    }
+                    .padding(.horizontal, 50)
                 }
-
-                HStack {
-                    VStack {
-                        Text("\(viewModel.windSpeed)")
-                            .fontWeight(.bold)
-                            .foregroundColor(.black)
-
-                        Text("Wind")
-                            .foregroundColor(.black)
-                    }
-                    .font(.system(size: 25))
-
-                    Spacer()
-
-                    VStack {
-                        Text("\(viewModel.uv)")
-                            .fontWeight(.bold)
-                            .foregroundColor(.black)
-
-                        Text("UV")
-                            .foregroundColor(.black)
-                    }
-                    .font(.system(size: 25))
-
-                    Spacer()
-
-                    VStack {
-                        Text("\(viewModel.realFeel)")
-                            .fontWeight(.bold)
-                            .foregroundColor(.black)
-
-                        Text("Feel")
-                            .foregroundColor(.black)
-                    }
-                    .font(.system(size: 25))
-                }
-                .padding(.horizontal, 50)
             }
         }
         .navigationTitle("Hello, \(settings.user?.username ?? "World")!")
@@ -110,8 +112,8 @@ struct HomeScreen_Previews: PreviewProvider {
     static var previews: some View {
         HomeScreen(
             viewModel: HomeViewModel(
-                weatherProviding: MockWeatherProvider(),
-                locationProviding: MockLocationProvider()
+                capabilities: .mock,
+                input: .init()
             )
         )
     }

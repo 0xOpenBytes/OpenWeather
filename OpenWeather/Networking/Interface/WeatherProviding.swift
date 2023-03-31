@@ -8,6 +8,8 @@
 import Foundation
 import CoreLocation
 
-protocol WeatherProviding {
+protocol WeatherProviding: CurrentWeatherProviding { }
+
+protocol CurrentWeatherProviding {
     func currentWeather(for location: CLLocation) async throws -> DeviceWeather
 }
