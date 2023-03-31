@@ -16,6 +16,7 @@
 
 import Disk
 import Foundation
+import WeatherKit
 
 enum Mock {
     static func json<Value: Codable>(
