@@ -22,11 +22,11 @@ final class SearchLocationViewModel: ViewModel<SearchLocationCapabilities, Searc
     override var input: Input {
         didSet {
             guard input != oldValue else { return }
-            
+
             searchSubject.send(input.searchText)
         }
     }
-    
+
     override var content: Content {
         Content(result: result)
     }
@@ -40,6 +40,8 @@ final class SearchLocationViewModel: ViewModel<SearchLocationCapabilities, Searc
     @Published private var result: [DeviceLocation] = []
 
     init(
+        capabilities: SearchLocationCapabilities,
+        input: Input,
         errorHandler: ErrorHandler = ErrorHandler(
             plugins: [
                 ToastErrorPlugin()
@@ -48,13 +50,8 @@ final class SearchLocationViewModel: ViewModel<SearchLocationCapabilities, Searc
     ) {
         self.errorHandler = errorHandler
 
-        super.init(
-            capabilities: .init(
-                locationProviding: MockLocationProvider()
-            ),
-            input: .init()
-        )
-        
+        super.init(capabilities: capabilities, input: input)
+
         searchSubscription = searchSubject
             .removeDuplicates()
             .debounce(for: 0.300, scheduler: RunLoop.main)

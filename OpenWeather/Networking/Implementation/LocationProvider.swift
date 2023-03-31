@@ -116,7 +116,7 @@ struct MockLocationProvider: LocationProviding {
         guard address.isEmpty == false else { return [] }
 
         return Mock.locationsMap
-            .compactMap { (key, value) -> DeviceLocation? in
+            .compactMap { (key, value) -> DeviceLocation? in 
                 return key.lowercased().contains(address.lowercased()) ? value : nil
             }
     }
