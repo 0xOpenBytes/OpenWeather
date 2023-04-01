@@ -9,10 +9,11 @@ import Foundation
 import ViewModel
 import CoreLocation
 
-final class HomeViewModel: ViewModel<HomeViewModel.HomeCapabilities, HomeViewModel.Input, HomeViewModel.Content> {
-    struct HomeCapabilities {
-        static var mock: HomeCapabilities {
-            HomeCapabilities(
+final class HomeViewModel: ViewModel<HomeViewModel.Capabilities, HomeViewModel.Input, HomeViewModel.Content> {
+
+    struct Capabilities {
+        static var mock: Capabilities {
+            Capabilities(
                 locationProviding: MockLocationProvider(),
                 weatherProviding: MockWeatherProvider()
             )
@@ -68,7 +69,7 @@ final class HomeViewModel: ViewModel<HomeViewModel.HomeCapabilities, HomeViewMod
    @Published private var windSpeed: String = ""
 
     init(
-        capabilities: HomeCapabilities,
+        capabilities: Capabilities,
         input: Input,
         errorHandler: ErrorHandler = ErrorHandler(
             plugins: [
