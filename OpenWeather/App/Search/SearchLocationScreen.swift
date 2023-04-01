@@ -43,12 +43,7 @@ struct SearchLocationScreen: View {
 struct SearchScreen_Previews: PreviewProvider {
     static var previews: some View {
         OpenBytesNavigationView.preview {
-            SearchLocationScreen(
-                viewModel: SearchLocationViewModel(
-                    capabilities: .init(locationProviding: MockLocationProvider()),
-                    input: .init()
-                )
-            )
+            SearchLocationScreen(viewModel: .mock)
         }
     }
 }

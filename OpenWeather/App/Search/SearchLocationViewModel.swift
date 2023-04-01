@@ -10,13 +10,35 @@ import ViewModel
 import Foundation
 import CoreLocation
 
-final class SearchLocationViewModel: ViewModel<SearchLocationCapabilities, SearchLocationViewModel.Input, SearchLocationViewModel.Content> {
+final class SearchLocationViewModel: ViewModel<SearchLocationViewModel.Capabilities, SearchLocationViewModel.Input, SearchLocationViewModel.Content> {
+    struct Capabilities {
+        static var mock: Capabilities {
+            .init(
+                locationProviding: MockLocationProvider()
+            )
+        }
+
+        private var locationProviding: LocationProviding
+
+        init(locationProviding: LocationProviding) {
+            self.locationProviding = locationProviding
+        }
+
+        func getLocations(query: String) async throws -> [DeviceLocation] {
+            try await locationProviding.locations(for: query)
+        }
+    }
+
     struct Input: Equatable {
         var searchText: String = ""
     }
 
     struct Content {
         var result: [DeviceLocation]
+    }
+
+    static var mock: SearchLocationViewModel {
+        .init(capabilities: .mock, input: .init())
     }
 
     override var input: Input {
@@ -40,7 +62,7 @@ final class SearchLocationViewModel: ViewModel<SearchLocationCapabilities, Searc
     @Published private var result: [DeviceLocation] = []
 
     init(
-        capabilities: SearchLocationCapabilities,
+        capabilities: Capabilities,
         input: Input,
         errorHandler: ErrorHandler = ErrorHandler(
             plugins: [
@@ -78,21 +100,5 @@ final class SearchLocationViewModel: ViewModel<SearchLocationCapabilities, Searc
                 errorHandler.handle(error: error)
             }
         }
-    }
-}
-
-protocol SearchLocationCapable {
-    func getLocations(query: String) async throws -> [DeviceLocation]
-}
-
-final class SearchLocationCapabilities: SearchLocationCapable {
-    private var locationProviding: LocationProviding
-
-    init(locationProviding: LocationProviding) {
-        self.locationProviding = locationProviding
-    }
-
-    func getLocations(query: String) async throws -> [DeviceLocation] {
-        try await locationProviding.locations(for: query)
     }
 }

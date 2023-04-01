@@ -31,12 +31,7 @@ struct RootView: View {
         TabView(selection: $navigation.tab) {
             OpenBytesNavigationView(path: navigation.home) {
                 // TODO: Update to Production
-                HomeScreen(
-                    viewModel: HomeViewModel(
-                        capabilities: .mock,
-                        input: .init()
-                    )
-                )
+                HomeScreen(viewModel: .mock)
             }
             .tag(Tab.home)
             .tabItem {
@@ -46,12 +41,7 @@ struct RootView: View {
 
             OpenBytesNavigationView(path: navigation.search) {
                 // TODO: Update to Production
-                SearchLocationScreen(
-                    viewModel: SearchLocationViewModel(
-                        capabilities: .init(locationProviding: MockLocationProvider()),
-                        input: .init()
-                    )
-                )
+                SearchLocationScreen(viewModel: .mock)
             }
             .tag(Tab.search)
             .tabItem {
@@ -61,12 +51,7 @@ struct RootView: View {
 
             OpenBytesNavigationView(path: navigation.summary) {
                 // TODO: Update to Production
-                SummaryScreen(
-                    viewModel: SummaryViewModel(
-                        weatherProviding: MockWeatherProvider(),
-                        locationProviding: MockLocationProvider()
-                    )
-                )
+                SummaryScreen(viewModel: .mock)
             }
             .tag(Tab.summary)
             .tabItem {

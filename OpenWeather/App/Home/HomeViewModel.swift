@@ -47,6 +47,10 @@ final class HomeViewModel: ViewModel<HomeViewModel.Capabilities, HomeViewModel.I
         var windSpeed: String
     }
 
+    static var mock: HomeViewModel {
+        .init(capabilities: .mock, input: .init())
+    }
+
     override var content: Content {
         Content(
             locationName: locationName,
