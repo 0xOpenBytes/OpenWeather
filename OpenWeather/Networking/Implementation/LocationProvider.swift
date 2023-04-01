@@ -115,8 +115,7 @@ struct MockLocationProvider: LocationProviding {
     func locations(for address: String) async throws -> [DeviceLocation] {
         guard address.isEmpty == false else { return [] }
 
-        return Mock.locationsMap
-            .compactMap { (key, value) -> DeviceLocation? in 
+        return Mock.locationsMap.compactMap { (key, value) -> DeviceLocation? in
                 return key.lowercased().contains(address.lowercased()) ? value : nil
             }
     }

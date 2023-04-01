@@ -8,7 +8,12 @@
 import Foundation
 import CoreLocation
 
-protocol LocationProviding {
+protocol LocationProviding: LocationNameProviding, LocationsSearchProviding { }
+
+protocol LocationNameProviding {
     func locationName(for location: CLLocation) async throws -> String
+}
+
+protocol LocationsSearchProviding {
     func locations(for address: String) async throws -> [DeviceLocation]
 }

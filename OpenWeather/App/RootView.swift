@@ -33,8 +33,8 @@ struct RootView: View {
                 // TODO: Update to Production
                 HomeScreen(
                     viewModel: HomeViewModel(
-                        weatherProviding: MockWeatherProvider(),
-                        locationProviding: MockLocationProvider()
+                        capabilities: .mock,
+                        input: .init()
                     )
                 )
             }
