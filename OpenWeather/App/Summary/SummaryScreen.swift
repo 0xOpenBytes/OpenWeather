@@ -12,15 +12,21 @@ struct SummaryScreen: View {
     private let locations: [CLLocation] = [.london, .cairo, .newYork]
 
     @ObservedObject var viewModel: SummaryViewModel
+    
+    init(viewModel: SummaryViewModel) {
+        self.viewModel = viewModel
+    }
 
     var body: some View {
-        List {
-            ForEach(viewModel.summaries) { summary in
-                LocationWeatherItem(
-                    locationName: summary.locationName,
-                    temperature: summary.temperature,
-                    symbolName: summary.symbolName
-                )
+        viewModel.view { content in
+            List {
+                ForEach(content.summaries) { summary in
+                    LocationWeatherItem(
+                        locationName: summary.locationName,
+                        temperature: summary.temperature,
+                        symbolName: summary.symbolName
+                    )
+                }
             }
         }
         .onAppear {
@@ -46,11 +52,6 @@ struct LocationWeatherItem: View {
 
 struct SummaryScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SummaryScreen(
-            viewModel: SummaryViewModel(
-                weatherProviding: MockWeatherProvider(),
-                locationProviding: MockLocationProvider()
-            )
-        )
+        SummaryScreen(viewModel: .mock)
     }
 }

@@ -61,12 +61,7 @@ struct RootView: View {
 
             OpenBytesNavigationView(path: navigation.summary) {
                 // TODO: Update to Production
-                SummaryScreen(
-                    viewModel: SummaryViewModel(
-                        weatherProviding: MockWeatherProvider(),
-                        locationProviding: MockLocationProvider()
-                    )
-                )
+                SummaryScreen(viewModel: .mock)
             }
             .tag(Tab.summary)
             .tabItem {

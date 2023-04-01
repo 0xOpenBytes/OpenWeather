@@ -6,29 +6,64 @@
 //
 
 import Foundation
+import ViewModel
 import CoreLocation
 
-final class SummaryViewModel: ObservableObject, ErrorHandling {
-    private var weatherProviding: WeatherProviding
-    private var locationProviding: LocationProviding
+final class SummaryViewModel: ViewModel<SummaryViewModel.Capabilities, SummaryViewModel.Input, SummaryViewModel.Content> {
+    struct Capabilities {
+        static var mock: Capabilities {
+            .init(
+                weatherProviding: MockWeatherProvider(),
+                locationProviding: MockLocationProvider()
+            )
+        }
+
+        private var weatherProviding: WeatherProviding
+        private var locationProviding: LocationProviding
+
+        init(weatherProviding: WeatherProviding, locationProviding: LocationProviding) {
+            self.weatherProviding = weatherProviding
+            self.locationProviding = locationProviding
+        }
+
+        func locationName(for location: CLLocation) async throws -> String {
+            try await locationProviding.locationName(for: location)
+        }
+
+        func currentWeather(for location: CLLocation) async throws -> DeviceWeather {
+            try await weatherProviding.currentWeather(for: location)
+        }
+    }
+
+    struct Input { }
+
+    struct Content {
+        let summaries: [DeviceWeatherSummary]
+    }
+
+    override var content: Content {
+        Content(summaries: summaries)
+    }
+
+    static var mock: SummaryViewModel {
+        .init(capabilities: .mock, input: .init())
+    }
+
+    private let errorHandler: ErrorHandler
     private var task: Task<Void, Never>?
 
-    var errorHandler: ErrorHandler
-
-    @Published var summaries: [DeviceWeatherSummary] = []
+    @Published private var summaries: [DeviceWeatherSummary] = []
 
     init(
-        weatherProviding: WeatherProviding,
-        locationProviding: LocationProviding,
         errorHandler: ErrorHandler = ErrorHandler(
-            plugins: [
-                ToastErrorPlugin()
-            ]
-        )
+            plugins: [ToastErrorPlugin()]
+        ),
+        capabilities: Capabilities,
+        input: Input
     ) {
-        self.weatherProviding = weatherProviding
-        self.locationProviding = locationProviding
         self.errorHandler = errorHandler
+
+        super.init(capabilities: capabilities, input: input)
     }
 
     func getWeatherSummary(for locations: [CLLocation]) {
@@ -39,8 +74,8 @@ final class SummaryViewModel: ObservableObject, ErrorHandling {
                 .asyncCompactMap { [weak self] location -> DeviceWeatherSummary? in
                     guard
                         let self = self,
-                        let locationName = try? await self.locationProviding.locationName(for: location),
-                        let weather = try? await self.weatherProviding.currentWeather(for: location)
+                        let locationName = try? await self.capabilities.locationName(for: location),
+                        let weather = try? await self.capabilities.currentWeather(for: location)
                     else {
                         return nil
                     }
