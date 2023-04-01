@@ -61,12 +61,12 @@ final class HomeViewModel: ViewModel<HomeViewModel.Capabilities, HomeViewModel.I
     private var errorHandler: ErrorHandler
     private var task: Task<Void, Never>?
 
-   @Published private var locationName: String = ""
-   @Published private var temperature: String = ""
-   @Published private var symbolName: String = ""
-   @Published private var realFeel: String = ""
-   @Published private var uv: String = ""
-   @Published private var windSpeed: String = ""
+    @Published private var locationName: String = ""
+    @Published private var temperature: String = ""
+    @Published private var symbolName: String = ""
+    @Published private var realFeel: String = ""
+    @Published private var uv: String = ""
+    @Published private var windSpeed: String = ""
 
     init(
         capabilities: Capabilities,
