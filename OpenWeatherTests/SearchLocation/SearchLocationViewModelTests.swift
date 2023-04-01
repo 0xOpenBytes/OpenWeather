@@ -12,10 +12,7 @@ import Test
 final class SearchLocationViewModelTests: XCTestCase {
 
     func testEmptySearchText() async throws {
-        let sut = SearchLocationViewModel(
-            capabilities: .init(locationProviding: MockLocationProvider()),
-            input: .init()
-        )
+        let sut: SearchLocationViewModel = .mock
 
         sut.input.searchText = ""
 
@@ -27,10 +24,7 @@ final class SearchLocationViewModelTests: XCTestCase {
     }
 
     func testNonEmptySearchText_CamelcaseNewKeyword() async throws {
-        let sut = SearchLocationViewModel(
-            capabilities: .init(locationProviding: MockLocationProvider()),
-            input: .init()
-        )
+        let sut: SearchLocationViewModel = .mock
 
         sut.input.searchText = "New"
 
@@ -42,10 +36,7 @@ final class SearchLocationViewModelTests: XCTestCase {
     }
 
     func testNonEmptySearchText_LowercasenewKeyword() async throws {
-        let sut = SearchLocationViewModel(
-            capabilities: .init(locationProviding: MockLocationProvider()),
-            input: .init()
-        )
+        let sut: SearchLocationViewModel = .mock
 
         sut.input.searchText = "new"
 
@@ -57,10 +48,7 @@ final class SearchLocationViewModelTests: XCTestCase {
     }
 
     func testNonEmptySearchText_CamelcaseLonKeyword() async throws {
-        let sut = SearchLocationViewModel(
-            capabilities: .init(locationProviding: MockLocationProvider()),
-            input: .init()
-        )
+        let sut: SearchLocationViewModel = .mock
 
         sut.input.searchText = "Lon"
 

@@ -110,11 +110,6 @@ struct HomeScreen: View {
 
 struct HomeScreen_Previews: PreviewProvider {
     static var previews: some View {
-        HomeScreen(
-            viewModel: HomeViewModel(
-                capabilities: .mock,
-                input: .init()
-            )
-        )
+        HomeScreen(viewModel: .mock)
     }
 }
