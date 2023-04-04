@@ -17,11 +17,11 @@ final class HomeViewModelTests: XCTestCase {
         sut.getWeather(for: .london)
 
         let locationName = "London"
-        let temperature = "\(Mock.londonWeather.currentTemperature.abbreviated)"
+        let temperature = "\(Mock.londonWeather.currentTemperature.abbreviatedAsProvided)"
         let symbolName = "\(Mock.londonWeather.symbolName)"
-        let realFeel = "\(Mock.londonWeather.realFeel.abbreviated)"
+        let realFeel = "\(Mock.londonWeather.realFeel.abbreviatedAsProvided)"
         let uv = "\(Mock.londonWeather.uv)"
-        let windSpeed = "\(Mock.londonWeather.wind.speed.abbreviated)"
+        let windSpeed = "\(Mock.londonWeather.wind.speed.abbreviatedAsProvided)"
 
         try await Waiter(sut).wait(for: \.value.content) { content in
             content.locationName == locationName
@@ -38,12 +38,5 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertEqual(sut.content.realFeel, realFeel)
         XCTAssertEqual(sut.content.uv, uv)
         XCTAssertEqual(sut.content.windSpeed, windSpeed)
-    }
-}
-
-//TODO: Put this in global file
-private extension Measurement where UnitType : Dimension {
-    var abbreviated: String {
-        formatted(.measurement(width: .abbreviated, usage: .asProvided))
     }
 }
