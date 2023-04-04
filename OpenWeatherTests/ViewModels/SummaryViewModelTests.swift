@@ -12,43 +12,14 @@ import CoreLocation
 
 final class SummaryViewModelTests: XCTestCase {
 
-    func testEmptyLocations() async throws {
-        let locations: [CLLocation] = []
+    func testGetWeatherSummary() async throws {
         let sut: SummaryViewModel = .mock
-        let waiter: Waiter = .init(sut)
 
-        sut.getWeatherSummary(for: [.london])
-
-        try await waiter.wait(for: \.value.content.summaries) { summaries in
-            summaries.isEmpty == false
-        }
-
-        sut.getWeatherSummary(for: locations)
-
-        try await waiter.wait(for: \.value.content.summaries) { summaries in
-            summaries.count == locations.count
-        }
-
-        XCTAssertEqual(sut.content.summaries.count, locations.count)
+        try await testGetWeatherSummary(on: sut, for: [.london, .cairo])
+        try await testGetWeatherSummary(on: sut, for: [])
     }
 
-    func testOneLocation_London() async throws {
-        let locations: [CLLocation] = [.london]
-        let sut: SummaryViewModel = .mock
-
-        sut.getWeatherSummary(for: locations)
-
-        try await Waiter(sut).wait(for: \.value.content.summaries) { summaries in
-            summaries.count == locations.count
-        }
-
-        XCTAssertEqual(sut.content.summaries.count, locations.count)
-    }
-
-    func testFourLocations() async throws {
-        let locations: [CLLocation] = [.london, .cairo, .newYork, .newZealand]
-        let sut: SummaryViewModel = .mock
-
+    private func testGetWeatherSummary(on sut: SummaryViewModel, for locations: [CLLocation]) async throws {
         sut.getWeatherSummary(for: locations)
 
         try await Waiter(sut).wait(for: \.value.content.summaries) { summaries in
