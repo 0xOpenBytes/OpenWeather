@@ -16,6 +16,16 @@ final class HomeViewModelTests: XCTestCase {
 
         sut.getWeather(for: .london)
 
+        try await Waiter(sut).wait(for: \.value.content) { content in
+            content == sut.expectedLondonContent
+        }
+
+        XCTAssertEqual(sut.content, sut.expectedLondonContent)
+    }
+}
+
+private extension HomeViewModel {
+    var expectedLondonContent: Content {
         let locationName = "London"
         let temperature = "\(Mock.londonWeather.currentTemperature.abbreviatedAsProvided)"
         let symbolName = "\(Mock.londonWeather.symbolName)"
@@ -23,20 +33,13 @@ final class HomeViewModelTests: XCTestCase {
         let uv = "\(Mock.londonWeather.uv)"
         let windSpeed = "\(Mock.londonWeather.wind.speed.abbreviatedAsProvided)"
 
-        try await Waiter(sut).wait(for: \.value.content) { content in
-            content.locationName == locationName
-            && content.temperature == temperature
-            && content.symbolName == symbolName
-            && content.realFeel == realFeel
-            && content.uv == uv
-            && content.windSpeed == windSpeed
-        }
-
-        XCTAssertEqual(sut.content.locationName, "London")
-        XCTAssertEqual(sut.content.temperature, temperature)
-        XCTAssertEqual(sut.content.symbolName, symbolName)
-        XCTAssertEqual(sut.content.realFeel, realFeel)
-        XCTAssertEqual(sut.content.uv, uv)
-        XCTAssertEqual(sut.content.windSpeed, windSpeed)
+        return Content(
+            locationName: locationName,
+            temperature: temperature,
+            symbolName: symbolName,
+            realFeel: realFeel,
+            uv: uv,
+            windSpeed: windSpeed
+        )
     }
 }

@@ -9,7 +9,11 @@ import Foundation
 import ViewModel
 import CoreLocation
 
-final class SummaryViewModel: ViewModel<SummaryViewModel.Capabilities, SummaryViewModel.Input, SummaryViewModel.Content> {
+final class SummaryViewModel: ViewModel<
+    SummaryViewModel.Capabilities,
+    SummaryViewModel.Input,
+    SummaryViewModel.Content
+> {
     struct Capabilities {
         static var mock: Capabilities {
             .init(

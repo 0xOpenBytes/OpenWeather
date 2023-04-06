@@ -9,7 +9,11 @@ import Foundation
 import ViewModel
 import CoreLocation
 
-final class HomeViewModel: ViewModel<HomeViewModel.Capabilities, HomeViewModel.Input, HomeViewModel.Content> {
+final class HomeViewModel: ViewModel<
+    HomeViewModel.Capabilities,
+    HomeViewModel.Input,
+    HomeViewModel.Content
+> {
 
     struct Capabilities {
         static var mock: Capabilities {
@@ -38,7 +42,7 @@ final class HomeViewModel: ViewModel<HomeViewModel.Capabilities, HomeViewModel.I
 
     struct Input: Equatable { }
 
-    struct Content {
+    struct Content: Equatable {
         var locationName: String
         var temperature: String
         var symbolName: String
