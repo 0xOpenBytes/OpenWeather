@@ -61,7 +61,7 @@ targets:
         - path: OpenWeather
           name: OpenWeather
           excludes:
-            - "Swish"
+            - "SPX"
     dependencies:
       - package: Fork
       - package: Scribe

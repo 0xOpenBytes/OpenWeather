@@ -40,7 +40,7 @@
           }
         }
       },
-      "fullqueuedeveloper/swish/swish": {
+      "fullqueuedeveloper/spx/spx": {
         "version": "1.0.4",
         "bottle": false
       },
@@ -50,7 +50,7 @@
       }
     },
     "tap": {
-      "fullqueuedeveloper/swish": {
+      "fullqueuedeveloper/spx": {
         "revision": "0b8b8ef6ba58ee412a924b53798afbf0499f2af4"
       },
       "chargepoint/xcparse": {

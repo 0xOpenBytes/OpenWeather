@@ -35,11 +35,11 @@
         "description": "Test is a simple testing function that allows you to create test suites with multiple steps, expectations, and assertions."
     },
     {
-        "title": "Swish",
+        "title": "SPX",
         "author": "FullQueueDeveloper",
-        "url": "https://github.com/FullQueueDeveloper/Swish",
+        "url": "https://github.com/FullQueueDeveloper/SPX",
         "iconURL": "https://avatars.githubusercontent.com/u/103295874",
-        "description": "Swish is a Swift script running tool to easily run Swift packages in a supporting relative directory named Swish. Swish pairs nicely with Sh to run shell commands and process shell output from your Swift scripts."
+        "description": "SPX is a Swift script running tool to easily run Swift packages in a supporting relative directory named SPX. SPX pairs nicely with Sh to run shell commands and process shell output from your Swift scripts."
     },
     {
         "title": "Sh",

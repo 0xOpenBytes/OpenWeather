@@ -1,7 +1,7 @@
 brew "xcodegen"
 
-tap "fullqueuedeveloper/swish"
-brew "fullqueuedeveloper/swish/swish"
+tap "fullqueuedeveloper/spx"
+brew "fullqueuedeveloper/spx/spx"
 
 tap "chargepoint/xcparse"
 brew "chargepoint/xcparse/xcparse"

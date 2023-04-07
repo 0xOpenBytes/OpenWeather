@@ -21,7 +21,7 @@ let package = Package(
   ],
   targets: [
     .executableTarget(name: "appicon",
-      dependencies: ["SwishXCAssets"]),
+                      dependencies: ["SwishXCAssets"]),
 
     .executableTarget(name: "appstore",
                       dependencies: ["SwishAppStore"]),
