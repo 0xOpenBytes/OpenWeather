@@ -5,7 +5,7 @@ public struct Project {
     public init() {}
     
     public func generate() throws {
-        let resourcePath = "./Swish/Sources/ProjectLib/Resources"
+        let resourcePath = "./SPX/Sources/ProjectLib/Resources"
         let filename: String
         let header: String
         

@@ -56,7 +56,7 @@
 1. Install [Homebrew](https://brew.sh)
 2. Run `brew bundle`
 
-Learn more about [Swish](https://www.github.com/FullQueueDeveloper/Swish) and [Xcodegen](https://github.com/yonaskolb/XcodeGen)
+Learn more about [SPX](https://www.github.com/FullQueueDeveloper/SPX) and [Xcodegen](https://github.com/yonaskolb/XcodeGen)
 
 ### Renaming
 
@@ -70,14 +70,14 @@ There are some scripts to help rename OpenWeather to whatever project name you w
 
 ### Regenerate the project
 
-    swish xcodeproj
+    spx xcodeproj
 
 ### Pushing to the App Store
 
 This script expects `APPLE_TEAM_ID`, `APPLOADER_USERNAME` and `APPLOADER_PASSWORD` to be present in the environment.
 
-It doesn't have to stay that way. Modify `Swish/Sources/appstore/Secrets.swift` to use an API key, or perhaps fetch credentials from a password manager like 1Password using [Sh1Password](https://github.com/FullQueueDeveloper/Sh1Password).
+It doesn't have to stay that way. Modify `SPX/Sources/appstore/Secrets.swift` to use an API key, or perhaps fetch credentials from a password manager like 1Password using [Sh1Password](https://github.com/FullQueueDeveloper/Sh1Password).
 
 When that's settled, you can run
 
-    swish appstore
+    spx appstore
