@@ -10,7 +10,11 @@ import ViewModel
 import Foundation
 import CoreLocation
 
-final class SearchLocationViewModel: ViewModel<SearchLocationViewModel.Capabilities, SearchLocationViewModel.Input, SearchLocationViewModel.Content> {
+final class SearchLocationViewModel: ViewModel<
+    SearchLocationViewModel.Capabilities,
+    SearchLocationViewModel.Input,
+    SearchLocationViewModel.Content
+> {
     struct Capabilities {
         static var mock: Capabilities {
             .init(

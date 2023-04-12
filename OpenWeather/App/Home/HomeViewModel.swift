@@ -9,7 +9,11 @@ import Foundation
 import ViewModel
 import CoreLocation
 
-final class HomeViewModel: ViewModel<HomeViewModel.Capabilities, HomeViewModel.Input, HomeViewModel.Content> {
+final class HomeViewModel: ViewModel<
+    HomeViewModel.Capabilities,
+    HomeViewModel.Input,
+    HomeViewModel.Content
+> {
 
     struct Capabilities {
         static var mock: Capabilities {
@@ -38,7 +42,7 @@ final class HomeViewModel: ViewModel<HomeViewModel.Capabilities, HomeViewModel.I
 
     struct Input: Equatable { }
 
-    struct Content {
+    struct Content: Equatable {
         var locationName: String
         var temperature: String
         var symbolName: String
@@ -98,17 +102,11 @@ final class HomeViewModel: ViewModel<HomeViewModel.Capabilities, HomeViewModel.I
 
             if let weather = try? await capabilities.currentWeather(for: location) {
                 await MainActor.run {
-                    temperature = weather.currentTemperature.formatted(
-                        .measurement(width: .abbreviated, usage: .asProvided)
-                    )
+                    temperature = weather.currentTemperature.abbreviatedAsProvided
                     symbolName = weather.symbolName
-                    realFeel = weather.realFeel.formatted(
-                        .measurement(width: .abbreviated, usage: .asProvided)
-                    )
+                    realFeel = weather.realFeel.abbreviatedAsProvided
                     uv = "\(weather.uv)"
-                    windSpeed = weather.wind.speed.formatted(
-                        .measurement(width: .abbreviated, usage: .asProvided)
-                    )
+                    windSpeed = weather.wind.speed.abbreviatedAsProvided
                 }
             }
         }

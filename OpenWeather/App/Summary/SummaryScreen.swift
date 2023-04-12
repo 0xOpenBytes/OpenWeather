@@ -12,7 +12,7 @@ struct SummaryScreen: View {
     private let locations: [CLLocation] = [.london, .cairo, .newYork]
 
     @ObservedObject var viewModel: SummaryViewModel
-    
+
     init(viewModel: SummaryViewModel) {
         self.viewModel = viewModel
     }
