@@ -11,5 +11,5 @@ import CoreLocation
 protocol WeatherProviding: CurrentWeatherProviding { }
 
 protocol CurrentWeatherProviding {
-    func currentWeather(for location: CLLocation) async throws -> DeviceWeather
+    func weather(for location: CLLocation) async throws -> DeviceWeather
 }
