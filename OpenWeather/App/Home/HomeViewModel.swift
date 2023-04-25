@@ -71,7 +71,7 @@ final class HomeViewModel: ViewModel<
 
     @Published private var locationName: String = ""
     @Published private var temperature: String = ""
-    @Published private var symbolName: String = ""
+    @Published private var symbolName: String = "ellipsis"
     @Published private var realFeel: String = ""
     @Published private var uv: String = ""
     @Published private var windSpeed: String = ""
@@ -94,13 +94,15 @@ final class HomeViewModel: ViewModel<
         task?.cancel()
 
         task = Task {
-            if let locatioName = try? await capabilities.locationName(for: location) {
-                await MainActor.run {
-                    locationName = locatioName
-                }
-            }
+            do {
+                let locationName = try await capabilities.locationName(for: location)
 
-            if let weather = try? await capabilities.currentWeather(for: location) {
+                await MainActor.run {
+                    self.locationName = locationName
+                }
+
+                let weather = try await capabilities.weather(for: location)
+
                 await MainActor.run {
                     temperature = weather.currentTemperature.abbreviatedAsProvided
                     symbolName = weather.symbolName
@@ -108,6 +110,8 @@ final class HomeViewModel: ViewModel<
                     uv = "\(weather.uv)"
                     windSpeed = weather.wind.speed.abbreviatedAsProvided
                 }
+            } catch {
+                errorHandler.handle(error: error)
             }
         }
     }
