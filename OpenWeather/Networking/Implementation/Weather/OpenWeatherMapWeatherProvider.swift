@@ -48,4 +48,3 @@ struct OpenWeatherMapWeatherProvider: WeatherProviding {
         return WeatherAdapter.device(from: weather)
     }
 }
-
