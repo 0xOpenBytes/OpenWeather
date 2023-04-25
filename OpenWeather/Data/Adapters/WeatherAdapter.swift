@@ -8,7 +8,7 @@
 import Foundation
 import WeatherKit
 
-enum WeatherAdapter: Adaptable {
+enum WeatherAdapter {
     static func device(from: Weather) -> DeviceWeather {
         let currentWeather = from.currentWeather
         let wind = from.currentWeather.wind
@@ -31,6 +31,35 @@ enum WeatherAdapter: Adaptable {
                     symbolName: $0.symbolName
                 )
             }
+        )
+    }
+
+    static func device(from: OpenWeatherMapWeather) -> DeviceWeather {
+        let isMetric = Locale.autoupdatingCurrent.measurementSystem == .metric
+
+        return DeviceWeather(
+            currentTemperature: Measurement(
+                value: from.main.temp,
+                unit: isMetric ? .celsius : .fahrenheit
+            ),
+            realFeel: Measurement(
+                value: from.main.feels_like,
+                unit: isMetric ? .celsius : .fahrenheit
+            ),
+            uv: -1,
+            symbolName: "cloud",
+            wind: DeviceWind(
+                direction: Measurement(value: from.wind.deg, unit: .degrees),
+                speed: Measurement(
+                    value: from.wind.speed,
+                    unit: isMetric ? .metersPerSecond : .milesPerHour
+                ),
+                gust: Measurement(
+                    value: from.wind.gust ?? 0,
+                    unit: isMetric ? .metersPerSecond : .milesPerHour
+                )
+            ),
+            hourlyForecast: []
         )
     }
 }
