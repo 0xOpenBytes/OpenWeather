@@ -30,7 +30,7 @@ struct OpenWeatherMapWeatherProvider: WeatherProviding {
                     URLQueryItem(
                         name: "units",
                         value: Locale.autoupdatingCurrent.measurementSystem == .metric ? "metric" : "imperial"
-                    ),
+                    )
                 ]
             )
         else {
