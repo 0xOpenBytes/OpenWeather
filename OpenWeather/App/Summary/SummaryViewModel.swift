@@ -34,8 +34,8 @@ final class SummaryViewModel: ViewModel<
             try await locationProviding.locationName(for: location)
         }
 
-        func currentWeather(for location: CLLocation) async throws -> DeviceWeather {
-            try await weatherProviding.currentWeather(for: location)
+        func weather(for location: CLLocation) async throws -> DeviceWeather {
+            try await weatherProviding.weather(for: location)
         }
     }
 
@@ -79,7 +79,7 @@ final class SummaryViewModel: ViewModel<
                     guard
                         let self = self,
                         let locationName = try? await self.capabilities.locationName(for: location),
-                        let weather = try? await self.capabilities.currentWeather(for: location)
+                        let weather = try? await self.capabilities.weather(for: location)
                     else {
                         return nil
                     }

@@ -35,8 +35,8 @@ final class HomeViewModel: ViewModel<
             try await locationProviding.locationName(for: location)
         }
 
-        func currentWeather(for location: CLLocation) async throws -> DeviceWeather {
-            try await weatherProviding.currentWeather(for: location)
+        func weather(for location: CLLocation) async throws -> DeviceWeather {
+            try await weatherProviding.weather(for: location)
         }
     }
 
