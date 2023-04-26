@@ -31,7 +31,15 @@ struct RootView: View {
         TabView(selection: $navigation.tab) {
             OpenBytesNavigationView(path: navigation.home) {
                 // TODO: Update to Production
-                HomeScreen(viewModel: .mock)
+                HomeScreen(
+                    viewModel: HomeViewModel(
+                        capabilities: .init(
+                            locationProviding: MockLocationProvider(),
+                            weatherProviding: OpenWeatherMapWeatherProvider()
+                        ),
+                        input: .init()
+                    )
+                )
             }
             .tag(Tab.home)
             .tabItem {
