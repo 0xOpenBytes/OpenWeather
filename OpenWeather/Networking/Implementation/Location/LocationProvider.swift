@@ -71,14 +71,14 @@ struct LocationProvider: LocationProviding {
                             throwing: LocationProvidingError.failure(reason: error.localizedDescription)
                         )
                     } else {
-                        let result: [NetworkLocation] = placemarks
-                            .compactMap { placemark -> NetworkLocation? in
+                        let result: [LocationData] = placemarks
+                            .compactMap { placemark -> LocationData? in
                                 guard
                                     let name = placemark.name,
                                     let location = placemark.location
                                 else { return nil }
 
-                                return NetworkLocation(
+                                return LocationData(
                                     name: name,
                                     location: location
                                 )

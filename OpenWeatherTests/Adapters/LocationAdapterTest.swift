@@ -10,7 +10,7 @@ import XCTest
 
 final class LocationAdapterTest: XCTestCase {
     func testAdapter() {
-        let networkModel = NetworkLocation(
+        let networkModel = LocationData(
             name: "London",
             location: .london
         )

@@ -9,7 +9,7 @@ import Foundation
 import CoreLocation
 
 enum LocationAdapter: Adaptable {
-    static func device(from: NetworkLocation) -> DeviceLocation {
+    static func device(from: LocationData) -> DeviceLocation {
         return DeviceLocation(
             name: from.name,
             location: from.location
