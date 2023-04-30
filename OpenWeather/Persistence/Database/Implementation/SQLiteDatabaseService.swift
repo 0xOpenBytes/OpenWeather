@@ -27,9 +27,44 @@ struct SQLiteDatabaseService: DatabaseService {
         return try SQLiteDatabaseService(dbQueue)
     }
 
-    func tableExists(_ name: String) throws -> Bool {
-        try dbQueue.read { db in
+    func tableExists(_ name: String) async throws -> Bool {
+        try await dbQueue.read { db in
             try db.tableExists(name)
+        }
+    }
+
+    func favoriteExists(by id: String) async throws -> Bool {
+        try await findFavoriteLocation(by: id) != nil
+    }
+
+    func findFavoriteLocation(by id: String) async throws -> LocationData? {
+        try await dbQueue.read { db in
+            guard let row = try Row.fetchOne(
+                db,
+                sql: "SELECT id, name, lat, long FROM favorites WHERE id = ? LIMIT 1;",
+                arguments: ["'\(id)'"]
+            )
+            else { return nil }
+
+            return LocationData(
+                id: row[0],
+                name: row[1],
+                location: .init(latitude: row[2], longitude: row[3])
+            )
+        }
+    }
+
+    func saveFavoriteLocation(_ location: LocationData) async throws {
+        try await dbQueue.write { db in
+            let id = location.id
+            let name = location.name
+            let lat = location.location.coordinate.latitude
+            let long = location.location.coordinate.longitude
+
+            try db.execute(
+                sql: "INSERT INTO favorites (id, name, lat, long) VALUES (?, ?, ?, ?);",
+                arguments: [id, name, lat, long]
+            )
         }
     }
 }
@@ -93,11 +128,11 @@ extension SQLiteDatabaseService {
         migrator.registerMigration("createFavorites") { db in
             // Create a table
             // See <https://swiftpackageindex.com/groue/grdb.swift/documentation/grdb/databaseschema>
-            try db.create(table: "favorites") { t in
-                t.primaryKey("id", .text)
-                t.column("name", .text).notNull()
-                t.column("lat", .double).notNull()
-                t.column("long", .double).notNull()
+            try db.create(table: .sqlTable.favorites) { t in
+                t.primaryKey(.sqlColumn.id, .text)
+                t.column(.sqlColumn.name, .text).notNull()
+                t.column(.sqlColumn.lat, .double).notNull()
+                t.column(.sqlColumn.long, .double).notNull()
             }
         }
 
@@ -107,5 +142,18 @@ extension SQLiteDatabaseService {
         // }
 
         return migrator
+    }
+}
+
+extension String {
+    enum sqlTable {
+        static let favorites = "favorites"
+    }
+
+    enum sqlColumn {
+        static let id = "id"
+        static let name = "name"
+        static let lat = "lat"
+        static let long = "long"
     }
 }

@@ -9,6 +9,22 @@ import Foundation
 import CoreLocation
 
 struct LocationData {
+    let id: UUID
     let name: String
     let location: CLLocation
+
+    init(id: UUID = UUID(), name: String, location: CLLocation) {
+        self.id = id
+        self.name = name
+        self.location = location
+    }
+}
+
+extension LocationData: Equatable {
+
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+        && lhs.location.coordinate.latitude == rhs.location.coordinate.latitude
+        && lhs.location.coordinate.longitude == rhs.location.coordinate.longitude
+    }
 }

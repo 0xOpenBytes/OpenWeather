@@ -10,5 +10,9 @@ import Foundation
 protocol DatabaseService {
     static func empty() throws -> Self
 
-    func tableExists(_ name: String) throws -> Bool
+    func tableExists(_ name: String) async throws -> Bool
+
+    func favoriteExists(by id: String) async throws -> Bool
+    func findFavoriteLocation(by id: String) async throws -> LocationData?
+    func saveFavoriteLocation(_ location: LocationData) async throws
 }
