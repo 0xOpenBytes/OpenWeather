@@ -128,11 +128,11 @@ extension SQLiteDatabaseService {
         migrator.registerMigration("createFavorites") { db in
             // Create a table
             // See <https://swiftpackageindex.com/groue/grdb.swift/documentation/grdb/databaseschema>
-            try db.create(table: .sqlTable.favorites) { t in
-                t.primaryKey(.sqlColumn.id, .text)
-                t.column(.sqlColumn.name, .text).notNull()
-                t.column(.sqlColumn.lat, .double).notNull()
-                t.column(.sqlColumn.long, .double).notNull()
+            try db.create(table: "favorites") { t in
+                t.primaryKey("id", .text)
+                t.column("name", .text).notNull()
+                t.column("lat", .double).notNull()
+                t.column("long", .double).notNull()
             }
         }
 
@@ -142,18 +142,5 @@ extension SQLiteDatabaseService {
         // }
 
         return migrator
-    }
-}
-
-extension String {
-    enum sqlTable {
-        static let favorites = "favorites"
-    }
-
-    enum sqlColumn {
-        static let id = "id"
-        static let name = "name"
-        static let lat = "lat"
-        static let long = "long"
     }
 }
