@@ -26,6 +26,9 @@ packages:
   ViewModel:
     url: https://github.com/0xOpenBytes/ViewModel.git
     from: 0.1.0
+  GRDB:
+    url: https://github.com/groue/GRDB.swift.git
+    branch: master
   
 schemes:
   OpenWeather:
@@ -71,6 +74,7 @@ targets:
       - package: Test
       - package: OpenBytesNavigation
       - package: ViewModel
+      - package: GRDB
     postCompileScripts:
       - name: Swiftlint
         script: |
