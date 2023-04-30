@@ -33,30 +33,52 @@ struct SQLiteDatabaseService: DatabaseService {
         }
     }
 
+    func columns(in name: String) async throws -> [String] {
+        try await dbQueue.read { db in
+            try db
+                .columns(in: name)
+                .map { $0.name }
+        }
+    }
+
     func favoriteExists(by id: String) async throws -> Bool {
         try await findFavoriteLocation(by: id) != nil
     }
 
     func findFavoriteLocation(by id: String) async throws -> LocationData? {
         try await dbQueue.read { db in
+            let rows = try Row.fetchAll(db, sql: "SELECT * FROM favorites;")
+            
+            for row in rows {
+                print(rows)
+            }
+            
             guard let row = try Row.fetchOne(
                 db,
-                sql: "SELECT id, name, lat, long FROM favorites WHERE id = ? LIMIT 1;",
-                arguments: ["'\(id)'"]
+                sql: "SELECT id, name, lat, long FROM favorites WHERE id=? LIMIT 1;",
+                arguments: [id]
             )
             else { return nil }
 
+            guard
+                let id = row["id"] as? String,
+                let uuid = UUID(uuidString: id),
+                let name = row["name"] as? String,
+                let lat = row["lat"] as? Double,
+                let long = row["long"] as? Double
+            else { return nil }
+
             return LocationData(
-                id: row[0],
-                name: row[1],
-                location: .init(latitude: row[2], longitude: row[3])
+                id: uuid,
+                name: name,
+                location: .init(latitude: lat, longitude: long)
             )
         }
     }
 
-    func saveFavoriteLocation(_ location: LocationData) async throws {
+    func insertFavoriteLocation(_ location: LocationData) async throws {
         try await dbQueue.write { db in
-            let id = location.id
+            let id = location.id.uuidString
             let name = location.name
             let lat = location.location.coordinate.latitude
             let long = location.location.coordinate.longitude
@@ -64,6 +86,15 @@ struct SQLiteDatabaseService: DatabaseService {
             try db.execute(
                 sql: "INSERT INTO favorites (id, name, lat, long) VALUES (?, ?, ?, ?);",
                 arguments: [id, name, lat, long]
+            )
+        }
+    }
+
+    func deleteFavoriteLocation(by id: String) async throws {
+        try await dbQueue.write { db in
+            try db.execute(
+                sql: "DELETE FROM favorites WHERE id=?",
+                arguments: [id]
             )
         }
     }

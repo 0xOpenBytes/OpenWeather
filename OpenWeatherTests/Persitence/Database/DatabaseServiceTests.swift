@@ -9,12 +9,17 @@ import XCTest
 @testable import OpenWeather
 
 final class DatabaseServiceTests: XCTestCase {
-    func testDatabaseSchema() async throws {
+    func testFavoritesSchema() async throws {
         let sut: DatabaseService = try SQLiteDatabaseService.empty()
 
-        let tableExists = try await sut.tableExists("favorites")
+        let tableName: String = "favorites"
+        let tableExists = try await sut.tableExists(tableName)
 
         XCTAssert(tableExists)
+
+        let columns = try await sut.columns(in: tableName)
+
+        XCTAssertEqual(columns, ["id", "name", "lat", "long"])
     }
 
     func testInsertFavoriteLocation() async throws {
@@ -31,12 +36,37 @@ final class DatabaseServiceTests: XCTestCase {
 
         XCTAssert(locationDoesNotExist)
 
-        try await sut.saveFavoriteLocation(location)
+        try await sut.insertFavoriteLocation(location)
 
         let foundLocation = try await sut.findFavoriteLocation(
             by: location.id.uuidString
         )
 
         XCTAssert(location == foundLocation)
+    }
+
+    func testRemoveFavoriteLocation() async throws {
+        let sut: DatabaseService = try SQLiteDatabaseService.empty()
+
+        let location: LocationData = .init(
+            name: "London",
+            location: .london
+        )
+
+        try await sut.insertFavoriteLocation(location)
+
+        let locationExists = try await sut.favoriteExists(
+            by: location.id.uuidString
+        )
+
+        XCTAssert(locationExists)
+
+        try await sut.deleteFavoriteLocation(by: location.id.uuidString)
+
+        let locationDoesNotExist = try await sut.favoriteExists(
+            by: location.id.uuidString
+        ) == false
+
+        XCTAssert(locationDoesNotExist)
     }
 }

@@ -20,6 +20,19 @@ struct LocationData {
     }
 }
 
+extension LocationData: CustomStringConvertible {
+    var description: String {
+        """
+{
+    id: \(id),
+    name: \(name),
+    latitude: \(location.coordinate.latitude),
+    longitude: \(location.coordinate.longitude)
+}
+"""
+    }
+}
+
 extension LocationData: Equatable {
 
     static func == (lhs: Self, rhs: Self) -> Bool {
