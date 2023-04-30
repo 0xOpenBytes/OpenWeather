@@ -47,12 +47,6 @@ struct SQLiteDatabaseService: DatabaseService {
 
     func findFavoriteLocation(by id: String) async throws -> LocationData? {
         try await dbQueue.read { db in
-            let rows = try Row.fetchAll(db, sql: "SELECT * FROM favorites;")
-            
-            for row in rows {
-                print(rows)
-            }
-            
             guard let row = try Row.fetchOne(
                 db,
                 sql: "SELECT id, name, lat, long FROM favorites WHERE id=? LIMIT 1;",
