@@ -14,8 +14,8 @@ protocol DatabaseService {
     func columns(in name: String) async throws -> [String]
 
     // Favorites Table
-    func favoriteExists(by id: String) async throws -> Bool
-    func findFavoriteLocation(by id: String) async throws -> LocationData?
+    func favoriteExists(_ location: LocationData) async throws -> Bool
+    func findFavoriteLocation(_ location: LocationData) async throws -> LocationData?
     func insertFavoriteLocation(_ location: LocationData) async throws
-    func deleteFavoriteLocation(by id: String) async throws
+    func deleteFavoriteLocation(_ location: LocationData) async throws
 }

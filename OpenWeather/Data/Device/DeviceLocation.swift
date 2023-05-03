@@ -12,4 +12,7 @@ struct DeviceLocation: Identifiable {
     let id = UUID()
     let name: String
     let location: CLLocation
+
+    var lat: Double { location.coordinate.latitude }
+    var long: Double { location.coordinate.longitude }
 }

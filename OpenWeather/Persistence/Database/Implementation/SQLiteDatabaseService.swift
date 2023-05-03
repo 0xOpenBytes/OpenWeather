@@ -41,29 +41,35 @@ struct SQLiteDatabaseService: DatabaseService {
         }
     }
 
-    func favoriteExists(by id: String) async throws -> Bool {
-        try await findFavoriteLocation(by: id) != nil
+    func favoriteExists(_ location: LocationData) async throws -> Bool {
+        try await dbQueue.read { db in
+            guard let count = try Int.fetchOne(
+                db,
+                sql: "SELECT COUNT(*) FROM favorites WHERE name=? and lat=? and long=?;",
+                arguments: [location.name, location.lat, location.long]
+            )
+            else { return false }
+
+            return count == 1
+        }
     }
 
-    func findFavoriteLocation(by id: String) async throws -> LocationData? {
+    func findFavoriteLocation(_ location: LocationData) async throws -> LocationData? {
         try await dbQueue.read { db in
             guard let row = try Row.fetchOne(
                 db,
-                sql: "SELECT id, name, lat, long FROM favorites WHERE id=? LIMIT 1;",
-                arguments: [id]
+                sql: "SELECT name, lat, long FROM favorites WHERE name=? and lat=? and long=? LIMIT 1;",
+                arguments: [location.name, location.lat, location.long]
             )
             else { return nil }
 
             guard
-                let id = row["id"] as? String,
-                let uuid = UUID(uuidString: id),
                 let name = row["name"] as? String,
                 let lat = row["lat"] as? Double,
                 let long = row["long"] as? Double
             else { return nil }
 
             return LocationData(
-                id: uuid,
                 name: name,
                 location: .init(latitude: lat, longitude: long)
             )
@@ -72,23 +78,18 @@ struct SQLiteDatabaseService: DatabaseService {
 
     func insertFavoriteLocation(_ location: LocationData) async throws {
         try await dbQueue.write { db in
-            let id = location.id.uuidString
-            let name = location.name
-            let lat = location.location.coordinate.latitude
-            let long = location.location.coordinate.longitude
-
             try db.execute(
-                sql: "INSERT INTO favorites (id, name, lat, long) VALUES (?, ?, ?, ?);",
-                arguments: [id, name, lat, long]
+                sql: "INSERT INTO favorites (name, lat, long) VALUES (?, ?, ?);",
+                arguments: [location.name, location.lat, location.long]
             )
         }
     }
 
-    func deleteFavoriteLocation(by id: String) async throws {
+    func deleteFavoriteLocation(_ location: LocationData) async throws {
         try await dbQueue.write { db in
             try db.execute(
-                sql: "DELETE FROM favorites WHERE id=?",
-                arguments: [id]
+                sql: "DELETE FROM favorites WHERE name=? and lat=? and long=?",
+                arguments: [location.name, location.lat, location.long]
             )
         }
     }
@@ -154,7 +155,7 @@ extension SQLiteDatabaseService {
             // Create a table
             // See <https://swiftpackageindex.com/groue/grdb.swift/documentation/grdb/databaseschema>
             try db.create(table: "favorites") { t in
-                t.primaryKey("id", .text)
+                t.autoIncrementedPrimaryKey("id")
                 t.column("name", .text).notNull()
                 t.column("lat", .double).notNull()
                 t.column("long", .double).notNull()

@@ -7,14 +7,16 @@
 
 import Foundation
 import CoreLocation
+import CryptoKit
 
 struct LocationData {
-    let id: UUID
     let name: String
     let location: CLLocation
 
-    init(id: UUID = UUID(), name: String, location: CLLocation) {
-        self.id = id
+    var lat: Double { location.coordinate.latitude }
+    var long: Double { location.coordinate.longitude }
+
+    init(name: String, location: CLLocation) {
         self.name = name
         self.location = location
     }
@@ -24,20 +26,18 @@ extension LocationData: CustomStringConvertible {
     var description: String {
         """
 {
-    id: \(id),
     name: \(name),
-    latitude: \(location.coordinate.latitude),
-    longitude: \(location.coordinate.longitude)
+    latitude: \(lat),
+    longitude: \(long)
 }
 """
     }
 }
 
 extension LocationData: Equatable {
-
     static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.id == rhs.id
-        && lhs.location.coordinate.latitude == rhs.location.coordinate.latitude
-        && lhs.location.coordinate.longitude == rhs.location.coordinate.longitude
+        lhs.name == rhs.name
+        && lhs.lat == rhs.lat
+        && lhs.long == rhs.long
     }
 }

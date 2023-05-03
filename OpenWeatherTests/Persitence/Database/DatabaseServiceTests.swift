@@ -30,17 +30,13 @@ final class DatabaseServiceTests: XCTestCase {
             location: .london
         )
 
-        let locationDoesNotExist = try await sut.favoriteExists(
-            by: location.id.uuidString
-        ) == false
+        let locationDoesNotExist = try await sut.favoriteExists(location) == false
 
         XCTAssert(locationDoesNotExist)
 
         try await sut.insertFavoriteLocation(location)
 
-        let foundLocation = try await sut.findFavoriteLocation(
-            by: location.id.uuidString
-        )
+        let foundLocation = try await sut.findFavoriteLocation(location)
 
         XCTAssert(location == foundLocation)
     }
@@ -55,17 +51,13 @@ final class DatabaseServiceTests: XCTestCase {
 
         try await sut.insertFavoriteLocation(location)
 
-        let locationExists = try await sut.favoriteExists(
-            by: location.id.uuidString
-        )
+        let locationExists = try await sut.favoriteExists(location)
 
         XCTAssert(locationExists)
 
-        try await sut.deleteFavoriteLocation(by: location.id.uuidString)
+        try await sut.deleteFavoriteLocation(location)
 
-        let locationDoesNotExist = try await sut.favoriteExists(
-            by: location.id.uuidString
-        ) == false
+        let locationDoesNotExist = try await sut.favoriteExists(location) == false
 
         XCTAssert(locationDoesNotExist)
     }
