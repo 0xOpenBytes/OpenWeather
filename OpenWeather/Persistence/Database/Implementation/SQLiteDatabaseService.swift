@@ -159,6 +159,7 @@ extension SQLiteDatabaseService {
                 t.column("name", .text).notNull()
                 t.column("lat", .double).notNull()
                 t.column("long", .double).notNull()
+                t.column("created_at", .datetime).defaults(to: Date())
             }
         }
 
