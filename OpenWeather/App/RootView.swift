@@ -21,7 +21,7 @@ struct RootView: View {
     enum Tab {
         case home
         case search
-        case summary
+        case favorites
         case profile
     }
 
@@ -58,12 +58,12 @@ struct RootView: View {
             }
             .tag(Tab.search)
             .tabItem {
-                Image(systemName: "magnifyingglass")
+                Image(systemName: "location.magnifyingglass")
                 Text("Search")
             }
 
-            OpenBytesNavigationView(path: navigation.summary) {
-                SummaryScreen(
+            OpenBytesNavigationView(path: navigation.favorites) {
+                FavoritesScreen(
                     viewModel: .init(
                         capabilities: .init(
                             locationProviding: LocationProvider(),
@@ -73,10 +73,10 @@ struct RootView: View {
                     )
                 )
             }
-            .tag(Tab.summary)
+            .tag(Tab.favorites)
             .tabItem {
-                Image(systemName: "cloud.fog.circle")
-                Text("Summary")
+                Image(systemName: "heart")
+                Text("Favorites")
             }
 
             OpenBytesNavigationView(path: navigation.profile) {
