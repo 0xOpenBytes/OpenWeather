@@ -18,11 +18,7 @@ import OpenBytesNavigation
 import SwiftUI
 
 struct SearchLocationScreen: View {
-    @ObservedObject var viewModel: SearchLocationViewModel
-
-    init(viewModel: SearchLocationViewModel) {
-        self.viewModel = viewModel
-    }
+    @StateObject var viewModel: SearchLocationViewModel
 
     var body: some View {
         viewModel.view { content in

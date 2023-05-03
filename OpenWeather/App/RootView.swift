@@ -30,11 +30,10 @@ struct RootView: View {
     var body: some View {
         TabView(selection: $navigation.tab) {
             OpenBytesNavigationView(path: navigation.home) {
-                // TODO: Update to Production
                 HomeScreen(
                     viewModel: HomeViewModel(
                         capabilities: .init(
-                            locationProviding: MockLocationProvider(),
+                            locationProviding: LocationProvider(),
                             weatherProviding: OpenWeatherMapWeatherProvider()
                         ),
                         input: .init()
@@ -48,8 +47,14 @@ struct RootView: View {
             }
 
             OpenBytesNavigationView(path: navigation.search) {
-                // TODO: Update to Production
-                SearchLocationScreen(viewModel: .mock)
+                SearchLocationScreen(
+                    viewModel: .init(
+                        capabilities: .init(
+                            locationProviding: LocationProvider()
+                        ),
+                        input: .init()
+                    )
+                )
             }
             .tag(Tab.search)
             .tabItem {
@@ -58,8 +63,15 @@ struct RootView: View {
             }
 
             OpenBytesNavigationView(path: navigation.summary) {
-                // TODO: Update to Production
-                SummaryScreen(viewModel: .mock)
+                SummaryScreen(
+                    viewModel: .init(
+                        capabilities: .init(
+                            locationProviding: LocationProvider(),
+                            weatherProviding: OpenWeatherMapWeatherProvider()
+                        ),
+                        input: .init()
+                    )
+                )
             }
             .tag(Tab.summary)
             .tabItem {

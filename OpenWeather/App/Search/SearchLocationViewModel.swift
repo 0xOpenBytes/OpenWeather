@@ -86,23 +86,28 @@ final class SearchLocationViewModel: ViewModel<
             }
     }
 
-    private func getLocations(searchText: String) {
-        searchTask?.cancel()
+private func getLocations(searchText: String) {
+    searchTask?.cancel()
 
-        searchTask = Task {
-            do {
-                guard searchTask?.isCancelled == false else { return }
+    guard searchText.isEmpty == false else {
+        self.result = []
+        return
+    }
 
-                let result = try await capabilities.getLocations(query: searchText)
+    searchTask = Task {
+        do {
+            guard searchTask?.isCancelled == false else { return }
 
-                guard searchTask?.isCancelled == false else { return }
+            let result = try await capabilities.getLocations(query: searchText)
 
-                await MainActor.run {
-                    self.result = result
-                }
-            } catch {
-                errorHandler.handle(error: error)
+            guard searchTask?.isCancelled == false else { return }
+
+            await MainActor.run {
+                self.result = result
             }
+        } catch {
+            errorHandler.handle(error: error)
         }
     }
+}
 }

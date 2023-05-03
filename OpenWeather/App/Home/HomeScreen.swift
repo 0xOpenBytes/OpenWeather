@@ -21,11 +21,7 @@ struct HomeScreen: View {
     private let location: CLLocation = Mock.londonLocation
 
     @ObservedObject var settings: AppSettings = AppSettings.shared
-    @ObservedObject var viewModel: HomeViewModel
-
-    init(viewModel: HomeViewModel) {
-        self.viewModel = viewModel
-    }
+    @StateObject var viewModel: HomeViewModel
 
     var body: some View {
         viewModel.view { content in

@@ -17,17 +17,17 @@ final class SummaryViewModel: ViewModel<
     struct Capabilities {
         static var mock: Capabilities {
             .init(
-                weatherProviding: MockWeatherProvider(),
-                locationProviding: MockLocationProvider()
+                locationProviding: MockLocationProvider(),
+                weatherProviding: MockWeatherProvider()
             )
         }
 
         private var weatherProviding: WeatherProviding
         private var locationProviding: LocationProviding
 
-        init(weatherProviding: WeatherProviding, locationProviding: LocationProviding) {
-            self.weatherProviding = weatherProviding
+        init(locationProviding: LocationProviding, weatherProviding: WeatherProviding) {
             self.locationProviding = locationProviding
+            self.weatherProviding = weatherProviding
         }
 
         func locationName(for location: CLLocation) async throws -> String {

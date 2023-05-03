@@ -18,41 +18,14 @@ struct LocationProvider: LocationProviding {
     }
 
     private func locationName(for location: CLLocation) async throws -> LocationNameResponse {
-        return try await withCheckedThrowingContinuation { continuation in
-            locationName(
-                for: location,
-                completion: { placemark, error in
-                    if let error = error {
-                        continuation.resume(
-                            throwing: LocationProvidingError.failure(reason: error.localizedDescription)
-                        )
-                    } else {
-                        if let locationName = placemark?.name {
-                            continuation.resume(
-                                returning: LocationNameResponse(name: locationName)
-                            )
-                        } else {
-                            continuation.resume(
-                                throwing: LocationProvidingError.noSuchPlace
-                            )
-                        }
-                    }
-                }
-            )
-        }
-    }
+        let placemarks = try await geocoder.reverseGeocodeLocation(location)
 
-    private func locationName(
-        for location: CLLocation,
-        completion: @escaping (CLPlacemark?, Error?) -> Void
-    ) {
-        geocoder.reverseGeocodeLocation(location) { placemarks, error in
-            if let error = error as? NSError {
-                completion(nil, error)
-            } else {
-                completion(placemarks?.first, nil)
-            }
+        guard let name = placemarks.first?.name
+        else {
+            throw LocationProvidingError.noSuchPlace
         }
+
+        return LocationNameResponse(name: name)
     }
 
     func locations(for address: String) async throws -> [DeviceLocation] {

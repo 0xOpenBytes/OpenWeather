@@ -9,13 +9,9 @@ import SwiftUI
 import CoreLocation
 
 struct SummaryScreen: View {
-    private let locations: [CLLocation] = [.london, .cairo, .newYork]
+    @StateObject var viewModel: SummaryViewModel
 
-    @ObservedObject var viewModel: SummaryViewModel
-
-    init(viewModel: SummaryViewModel) {
-        self.viewModel = viewModel
-    }
+    private let locations: [CLLocation] = [.london]
 
     var body: some View {
         viewModel.view { content in
