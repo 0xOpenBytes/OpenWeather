@@ -8,13 +8,36 @@
 import SwiftUI
 
 struct LocationResultItem: View {
-    let name: String
+    let location: DeviceLocation
+
+    var onToggleFavorite: (() -> Void)?
 
     var body: some View {
         VStack {
-            Text(name)
+            HStack {
+                Text(location.name)
 
-            // ...
+                Spacer()
+
+                Button {
+                    onToggleFavorite?()
+                } label: {
+                    Image(
+                        systemName: location.isFavorite ? "heart.fill" : "heart"
+                    )
+                }
+                .tint(.red)
+            }
         }
+    }
+}
+
+struct LocationResultItem_Previews: PreviewProvider {
+    static var previews: some View {
+        LocationResultItem(
+            location: .init(name: "London", location: .london)
+        )
+        .padding(.all)
+        .previewLayout(.fixed(width: 328.0, height: 50.0))
     }
 }

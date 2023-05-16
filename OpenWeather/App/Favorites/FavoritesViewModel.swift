@@ -5,8 +5,9 @@
 //  FavoritesViewModel.swift
 //
 
-import Foundation
+import Combine
 import ViewModel
+import Foundation
 import CoreLocation
 
 final class FavoritesViewModel: ViewModel<
@@ -18,16 +19,23 @@ final class FavoritesViewModel: ViewModel<
         static var mock: Capabilities {
             .init(
                 locationProviding: MockLocationProvider(),
-                weatherProviding: MockWeatherProvider()
+                weatherProviding: MockWeatherProvider(),
+                database: MockDatabaseService()
             )
         }
 
-        private var weatherProviding: WeatherProviding
-        private var locationProviding: LocationProviding
+        private let weatherProviding: WeatherProviding
+        private let locationProviding: LocationProviding
+        private let database: DatabaseService
 
-        init(locationProviding: LocationProviding, weatherProviding: WeatherProviding) {
+        init(
+            locationProviding: LocationProviding,
+            weatherProviding: WeatherProviding,
+            database: DatabaseService
+        ) {
             self.locationProviding = locationProviding
             self.weatherProviding = weatherProviding
+            self.database = database
         }
 
         func locationName(for location: CLLocation) async throws -> String {
@@ -37,16 +45,24 @@ final class FavoritesViewModel: ViewModel<
         func weather(for location: CLLocation) async throws -> DeviceWeather {
             try await weatherProviding.weather(for: location)
         }
+
+        func getFavorites() async throws -> [DeviceLocation] {
+            try await database.fetchAllFavorites()
+        }
+
+        func getFavoritesPublisher() -> AnyPublisher<[DeviceLocation], Error> {
+            database.fetchAllFavoritesPublisher()
+        }
     }
 
     struct Input { }
 
     struct Content {
-        let favorites: [DeviceWeatherSummary]
+        let summaries: [DeviceWeatherSummary]
     }
 
     override var content: Content {
-        Content(favorites: favorites)
+        Content(summaries: summaries)
     }
 
     static var mock: FavoritesViewModel {
@@ -55,8 +71,9 @@ final class FavoritesViewModel: ViewModel<
 
     private let errorHandler: ErrorHandler
     private var task: Task<Void, Never>?
+    private var subscription: AnyCancellable?
 
-    @Published private var favorites: [DeviceWeatherSummary] = []
+    @Published private var summaries: [DeviceWeatherSummary] = []
 
     init(
         errorHandler: ErrorHandler = ErrorHandler(
@@ -68,34 +85,56 @@ final class FavoritesViewModel: ViewModel<
         self.errorHandler = errorHandler
 
         super.init(capabilities: capabilities, input: input)
-    }
 
-    func getWeatherSummary(for locations: [CLLocation]) {
-        task?.cancel()
-
-        task = Task {
-            let summaries = try? await locations
-                .asyncCompactMap { [weak self] location -> DeviceWeatherSummary? in
-                    guard
-                        let self = self,
-                        let locationName = try? await self.capabilities.locationName(for: location),
-                        let weather = try? await self.capabilities.weather(for: location)
-                    else {
-                        return nil
-                    }
-
-                    return DeviceWeatherSummary(
-                        locationName: locationName,
-                        temperature: weather.currentTemperature.formatted(
-                            .measurement(width: .abbreviated, usage: .asProvided)
-                        ),
-                        symbolName: weather.symbolName
-                    )
-                }
-
-            await MainActor.run {
-                self.favorites = summaries ?? []
+        subscription = self.capabilities
+            .getFavoritesPublisher()
+            .flatMap { $0
+                .publisher
+                .setFailureType(to: Error.self)
+                .asyncCompactMap(self.getWeatherSummary(for:))
+                .collect()
             }
-        }
+            .receive(on: RunLoop.main)
+            .sink(
+                receiveCompletion: { completion in
+                    if case let .failure(error) = completion {
+                        self.errorHandler.handle(error: error)
+                    }
+                },
+                receiveValue: { summaries in
+                    self.summaries = summaries
+                }
+            )
     }
+
+    private func getWeatherSummary(
+        for location: DeviceLocation
+    ) async throws -> DeviceWeatherSummary? {
+        guard
+            let weather = try? await self.capabilities.weather(for: location.location)
+        else { return nil }
+
+        return DeviceWeatherSummary(
+            locationName: location.name,
+            temperature: weather.currentTemperature.abbreviatedAsProvided,
+            symbolName: weather.symbolName
+        )
+    }
+
+//    private func getWeatherSummary(
+//        for locations: [DeviceLocation]
+//    ) async throws -> [DeviceWeatherSummary] {
+//        try await locations
+//            .asyncCompactMap { location in
+//                guard
+//                    let weather = try? await self.capabilities.weather(for: location.location)
+//                else { return nil }
+//
+//                return DeviceWeatherSummary(
+//                    locationName: location.name,
+//                    temperature: weather.currentTemperature.abbreviatedAsProvided,
+//                    symbolName: weather.symbolName
+//                )
+//            }
+//    }
 }

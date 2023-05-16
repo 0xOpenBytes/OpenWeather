@@ -11,22 +11,30 @@ import CoreLocation
 struct FavoritesScreen: View {
     @StateObject var viewModel: FavoritesViewModel
 
-    private let locations: [CLLocation] = [.london]
-
     var body: some View {
         viewModel.view { content in
-            List {
-                ForEach(content.favorites) { favorite in
-                    LocationWeatherItem(
-                        locationName: favorite.locationName,
-                        temperature: favorite.temperature,
-                        symbolName: favorite.symbolName
-                    )
+            if content.summaries.isEmpty {
+                Text("No Favorites Available")
+
+            } else {
+                List {
+                    ForEach(content.summaries) { favorite in
+                        LocationWeatherItem(
+                            locationName: favorite.locationName,
+                            temperature: favorite.temperature,
+                            symbolName: favorite.symbolName
+                        )
+                        .swipeActions(allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                print("ToBeRemoved")
+                            } label: {
+                                Label("Remove", systemImage: "heart.slash")
+                            }
+                            .tint(.red)
+                        }
+                    }
                 }
             }
-        }
-        .onAppear {
-            viewModel.getWeatherSummary(for: locations)
         }
     }
 }

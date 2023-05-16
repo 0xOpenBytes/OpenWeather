@@ -53,7 +53,8 @@ struct LocationProvider: LocationProviding {
 
                                 return LocationData(
                                     name: name,
-                                    location: location
+                                    lat: location.coordinate.latitude,
+                                    long: location.coordinate.longitude
                                 )
                             }
 

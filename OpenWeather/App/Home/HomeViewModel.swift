@@ -23,8 +23,8 @@ final class HomeViewModel: ViewModel<
             )
         }
 
-        private var locationProviding: LocationProviding
-        private var weatherProviding: WeatherProviding
+        private let locationProviding: LocationProviding
+        private let weatherProviding: WeatherProviding
 
         init(locationProviding: LocationProviding, weatherProviding: WeatherProviding) {
             self.locationProviding = locationProviding

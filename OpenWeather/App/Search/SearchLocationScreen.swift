@@ -24,9 +24,13 @@ struct SearchLocationScreen: View {
         viewModel.view { content in
             List {
                 ForEach(content.result) { location in
-                    LocationResultItem(name: location.name)
+                    // TODO: @0xLeif, a bit confused, is there a memory leak as I expected?
+                    LocationResultItem(location: location) { [weak viewModel] in
+                        viewModel?.toggleFavorite(for: location)
+                    }
                 }
             }
+            .buttonStyle(.borderless)
             .searchable(
                 text: viewModel.binding(\.searchText),
                 prompt: "Search by name or zipcode"

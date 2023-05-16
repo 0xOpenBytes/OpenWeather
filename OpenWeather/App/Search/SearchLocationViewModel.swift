@@ -18,18 +18,45 @@ final class SearchLocationViewModel: ViewModel<
     struct Capabilities {
         static var mock: Capabilities {
             .init(
-                locationProviding: MockLocationProvider()
+                locationProviding: MockLocationProvider(),
+                databaseService: MockDatabaseService()
             )
         }
 
         private var locationProviding: LocationProviding
+        private var databaseService: DatabaseService
 
-        init(locationProviding: LocationProviding) {
+        init(
+            locationProviding: LocationProviding,
+            databaseService: DatabaseService
+        ) {
             self.locationProviding = locationProviding
+            self.databaseService = databaseService
         }
 
         func getLocations(query: String) async throws -> [DeviceLocation] {
-            try await locationProviding.locations(for: query)
+            var locations = try await locationProviding.locations(for: query)
+            let favorites = try await databaseService.fetchAllFavorites(matching: locations)
+
+            for index in locations.indices {
+                locations[index].isFavorite = favorites.contains(locations[index])
+            }
+
+            return locations
+        }
+
+        func toggleFavorite(for location: DeviceLocation) async throws -> DeviceLocation {
+            var updated = location
+            if try await databaseService.favoriteExists(updated) {
+                try await databaseService.deleteOneFavorite(updated)
+                updated.isFavorite = false
+
+            } else {
+                try await databaseService.insertOneFavorite(updated)
+                updated.isFavorite = true
+            }
+
+            return updated
         }
     }
 
@@ -61,6 +88,7 @@ final class SearchLocationViewModel: ViewModel<
     private let searchSubject: CurrentValueSubject<String, Never> = CurrentValueSubject("")
 
     private var searchTask: Task<Void, Never>?
+    private var toggleFavoriteTask: Task<Void, Never>?
     private var searchSubscription: AnyCancellable?
 
     @Published private var result: [DeviceLocation] = []
@@ -86,28 +114,46 @@ final class SearchLocationViewModel: ViewModel<
             }
     }
 
-private func getLocations(searchText: String) {
-    searchTask?.cancel()
+    private func getLocations(searchText: String) {
+        searchTask?.cancel()
 
-    guard searchText.isEmpty == false else {
-        self.result = []
-        return
-    }
+        guard searchText.isEmpty == false else {
+            self.result = []
+            return
+        }
 
-    searchTask = Task {
-        do {
-            guard searchTask?.isCancelled == false else { return }
+        searchTask = Task {
+            do {
+                guard searchTask?.isCancelled == false else { return }
 
-            let result = try await capabilities.getLocations(query: searchText)
+                let result = try await capabilities.getLocations(query: searchText)
 
-            guard searchTask?.isCancelled == false else { return }
+                guard searchTask?.isCancelled == false else { return }
 
-            await MainActor.run {
-                self.result = result
+                await MainActor.run {
+                    self.result = result
+                }
+            } catch {
+                errorHandler.handle(error: error)
             }
-        } catch {
-            errorHandler.handle(error: error)
         }
     }
-}
+
+    func toggleFavorite(for location: DeviceLocation) {
+        toggleFavoriteTask?.cancel()
+
+        toggleFavoriteTask = Task {
+            do {
+                let updated = try await capabilities.toggleFavorite(for: location)
+
+                if let index = self.result.firstIndex(of: updated) {
+                    await MainActor.run {
+                        self.result[index] = updated
+                    }
+                }
+            } catch {
+                errorHandler.handle(error: error)
+            }
+        }
+    }
 }

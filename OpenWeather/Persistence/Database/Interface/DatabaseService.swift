@@ -6,16 +6,18 @@
 //
 
 import Foundation
+import Combine
 
 protocol DatabaseService {
-    static func empty() throws -> Self
-
     func tableExists(_ name: String) async throws -> Bool
     func columns(in name: String) async throws -> [String]
 
     // Favorites Table
-    func favoriteExists(_ location: LocationData) async throws -> Bool
-    func findFavoriteLocation(_ location: LocationData) async throws -> LocationData?
-    func insertFavoriteLocation(_ location: LocationData) async throws
-    func deleteFavoriteLocation(_ location: LocationData) async throws
+    func favoriteExists(_ location: DeviceLocation) async throws -> Bool
+    func fetchOneFavorite(_ location: DeviceLocation) async throws -> DeviceLocation?
+    func fetchAllFavorites() async throws -> [DeviceLocation]
+    func fetchAllFavoritesPublisher() -> AnyPublisher<[DeviceLocation], Error>
+    func fetchAllFavorites(matching locations: [DeviceLocation]) async throws -> [DeviceLocation]
+    func insertOneFavorite(_ location: DeviceLocation) async throws
+    func deleteOneFavorite(_ location: DeviceLocation) async throws
 }

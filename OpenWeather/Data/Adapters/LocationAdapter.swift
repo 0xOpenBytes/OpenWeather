@@ -7,12 +7,39 @@
 
 import Foundation
 import CoreLocation
+import GRDB
 
-enum LocationAdapter: Adaptable {
+enum LocationAdapter {
     static func device(from: LocationData) -> DeviceLocation {
-        return DeviceLocation(
+        DeviceLocation(
             name: from.name,
-            location: from.location
+            latitude: from.lat,
+            longitude: from.long
+        )
+    }
+
+    static func device(from: Row) throws -> DeviceLocation? {
+        guard
+            let name = from[0] as? String,
+            let lat = from[1] as? Double,
+            let long = from[2] as? Double
+        else {
+            // TODO: @0xLeif, should we throw an error instead?
+            return nil
+        }
+
+        return DeviceLocation(
+            name: name,
+            latitude: lat,
+            longitude: long
+        )
+    }
+
+    static func data(from: DeviceLocation) -> LocationData {
+        .init(
+            name: from.name,
+            lat: from.latitude,
+            long: from.longitude
         )
     }
 }

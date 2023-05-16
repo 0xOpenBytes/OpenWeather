@@ -22,10 +22,10 @@ final class SQLiteDatabaseServiceTests: XCTestCase {
         XCTAssertEqual(columns, ["id", "name", "lat", "long", "created_at"])
     }
 
-    func testInsertFavoriteLocation() async throws {
+    func testinsertOneFavorite() async throws {
         let sut = try SQLiteDatabaseService.empty()
 
-        let location: LocationData = .init(
+        let location: DeviceLocation = .init(
             name: "London",
             location: .london
         )
@@ -34,9 +34,9 @@ final class SQLiteDatabaseServiceTests: XCTestCase {
 
         XCTAssert(locationDoesNotExist)
 
-        try await sut.insertFavoriteLocation(location)
+        try await sut.insertOneFavorite(location)
 
-        let foundLocation = try await sut.findFavoriteLocation(location)
+        let foundLocation = try await sut.fetchOneFavorite(location)
 
         XCTAssert(location == foundLocation)
     }
@@ -44,18 +44,18 @@ final class SQLiteDatabaseServiceTests: XCTestCase {
     func testRemoveFavoriteLocation() async throws {
         let sut = try SQLiteDatabaseService.empty()
 
-        let location: LocationData = .init(
+        let location: DeviceLocation = .init(
             name: "London",
             location: .london
         )
 
-        try await sut.insertFavoriteLocation(location)
+        try await sut.insertOneFavorite(location)
 
         let locationExists = try await sut.favoriteExists(location)
 
         XCTAssert(locationExists)
 
-        try await sut.deleteFavoriteLocation(location)
+        try await sut.deleteOneFavorite(location)
 
         let locationDoesNotExist = try await sut.favoriteExists(location) == false
 

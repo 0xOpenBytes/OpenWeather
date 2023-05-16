@@ -5,32 +5,31 @@
 //  LocationData.swift
 //
 
+import GRDB
 import Foundation
 import CoreLocation
-import CryptoKit
 
-struct LocationData {
+struct LocationData: Codable {
     let name: String
-    let location: CLLocation
+    let lat: Double
+    let long: Double
 
-    var lat: Double { location.coordinate.latitude }
-    var long: Double { location.coordinate.longitude }
+    var location: CLLocation { .init(latitude: lat, longitude: long) }
+}
 
-    init(name: String, location: CLLocation) {
-        self.name = name
-        self.location = location
-    }
+extension LocationData: TableRecord, FetchableRecord {
+    static var databaseTableName: String = "favorites"
 }
 
 extension LocationData: CustomStringConvertible {
     var description: String {
         """
-{
-    name: \(name),
-    latitude: \(lat),
-    longitude: \(long)
-}
-"""
+        {
+            name: \(name),
+            latitude: \(lat),
+            longitude: \(long)
+        }
+        """
     }
 }
 

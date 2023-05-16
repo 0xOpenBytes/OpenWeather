@@ -50,7 +50,8 @@ struct RootView: View {
                 SearchLocationScreen(
                     viewModel: .init(
                         capabilities: .init(
-                            locationProviding: LocationProvider()
+                            locationProviding: LocationProvider(),
+                            databaseService: SQLiteDatabaseService.shared
                         ),
                         input: .init()
                     )
@@ -67,7 +68,8 @@ struct RootView: View {
                     viewModel: .init(
                         capabilities: .init(
                             locationProviding: LocationProvider(),
-                            weatherProviding: OpenWeatherMapWeatherProvider()
+                            weatherProviding: OpenWeatherMapWeatherProvider(),
+                            database: SQLiteDatabaseService.shared
                         ),
                         input: .init()
                     )
