@@ -18,14 +18,17 @@ enum LocationAdapter {
         )
     }
 
-    static func device(from: Row) throws -> DeviceLocation? {
-        guard
-            let name = from[0] as? String,
-            let lat = from[1] as? Double,
-            let long = from[2] as? Double
-        else {
-            // TODO: @0xLeif, should we throw an error instead?
-            return nil
+    static func device(from: Row) throws -> DeviceLocation {
+        guard let name = from[0] as? String else {
+            throw DatabaseError.noFoundColumn("name")
+        }
+
+        guard let lat = from[1] as? Double else {
+            throw DatabaseError.noFoundColumn("lat")
+        }
+
+        guard let long = from[2] as? Double else {
+            throw DatabaseError.noFoundColumn("long")
         }
 
         return DeviceLocation(

@@ -24,9 +24,8 @@ struct SearchLocationScreen: View {
         viewModel.view { content in
             List {
                 ForEach(content.result) { location in
-                    // TODO: @0xLeif, a bit confused, is there a memory leak as I expected?
-                    LocationResultItem(location: location) { [weak viewModel] in
-                        viewModel?.toggleFavorite(for: location)
+                    LocationResultItem(location: location) {
+                        self.viewModel.toggleFavorite(for: location)
                     }
                 }
             }

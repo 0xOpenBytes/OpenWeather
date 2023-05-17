@@ -11,22 +11,22 @@ import Combine
 import Foundation
 
 struct SQLiteDatabaseService: DatabaseService {
-    private let dbWriter: any DatabaseWriter
+    private let dbQueue: any DatabaseWriter
 
     init(_ dbQueue: any DatabaseWriter) throws {
-        self.dbWriter = dbQueue
+        self.dbQueue = dbQueue
 
         try self.migrator.migrate(dbQueue)
     }
 
     func tableExists(_ name: String) async throws -> Bool {
-        try await dbWriter.read { db in
+        try await dbQueue.read { db in
             try db.tableExists(name)
         }
     }
 
     func columns(in name: String) async throws -> [String] {
-        try await dbWriter.read { db in
+        try await dbQueue.read { db in
             try db
                 .columns(in: name)
                 .map { $0.name }
@@ -34,7 +34,7 @@ struct SQLiteDatabaseService: DatabaseService {
     }
 
     func favoriteExists(_ location: DeviceLocation) async throws -> Bool {
-        try await dbWriter.read { db in
+        try await dbQueue.read { db in
             guard let count = try Int.fetchOne(
                 db,
                 sql: "SELECT COUNT(*) FROM favorites WHERE name=? and lat=? and long=?",
@@ -51,7 +51,7 @@ struct SQLiteDatabaseService: DatabaseService {
     }
 
     func fetchOneFavorite(_ location: DeviceLocation) async throws -> DeviceLocation? {
-        try await dbWriter.read { db in
+        try await dbQueue.read { db in
             guard let row = try Row.fetchOne(
                 db,
                 sql: "SELECT name, lat, long FROM favorites WHERE name=? and lat=? and long=? LIMIT 1",
@@ -68,7 +68,7 @@ struct SQLiteDatabaseService: DatabaseService {
     }
 
     func fetchAllFavorites() async throws -> [DeviceLocation] {
-        try await dbWriter.read { db in
+        try await dbQueue.read { db in
             try fetchAllFavorites(db: db)
         }
     }
@@ -77,7 +77,7 @@ struct SQLiteDatabaseService: DatabaseService {
         ValueObservation.tracking { db in
             try fetchAllFavorites(db: db)
         }
-        .publisher(in: dbWriter)
+        .publisher(in: dbQueue)
         .eraseToAnyPublisher()
     }
 
@@ -93,7 +93,7 @@ struct SQLiteDatabaseService: DatabaseService {
     }
 
     func fetchAllFavorites(matching locations: [DeviceLocation]) async throws -> [DeviceLocation] {
-        try await dbWriter.read { db in
+        try await dbQueue.read { db in
 
             let arguments = locations.reduce(
                 into: (names: [String](), lats: [Double](), longs: [Double]())
@@ -117,7 +117,7 @@ struct SQLiteDatabaseService: DatabaseService {
     }
 
     func insertOneFavorite(_ location: DeviceLocation) async throws {
-        try await dbWriter.write { db in
+        try await dbQueue.write { db in
             try db.execute(
                 sql: "INSERT INTO favorites (name, lat, long) VALUES (?, ?, ?)",
                 arguments: [
@@ -130,7 +130,7 @@ struct SQLiteDatabaseService: DatabaseService {
     }
 
     func deleteOneFavorite(_ location: DeviceLocation) async throws {
-        try await dbWriter.write { db in
+        try await dbQueue.write { db in
             try db.execute(
                 sql: "DELETE FROM favorites WHERE name=? and lat=? and long=?",
                 arguments: [
@@ -173,7 +173,8 @@ extension SQLiteDatabaseService {
             let dbPool = try DatabasePool(
                 path: databaseURL.path,
                 // Use default AppDatabase configuration
-                configuration: SQLiteDatabaseService.makeConfiguration())
+                configuration: SQLiteDatabaseService.makeConfiguration()
+            )
 
             return try SQLiteDatabaseService(dbPool)
         } catch {
@@ -190,14 +191,6 @@ extension SQLiteDatabaseService {
             // Check the error message to determine what the actual problem was.
             fatalError("Unresolved error \(error)")
         }
-    }
-
-    static func empty() throws -> SQLiteDatabaseService {
-        let dbQueue = try DatabaseQueue(
-            configuration: SQLiteDatabaseService.makeConfiguration()
-        )
-
-        return try SQLiteDatabaseService(dbQueue)
     }
 }
 
@@ -278,8 +271,12 @@ extension SQLiteDatabaseService {
     }
 }
 
-class MockDatabaseService: DatabaseService {
-    private static var favorites: [LocationData] = []
+final class MockDatabaseService: DatabaseService {
+    private var favorites: [LocationData]
+
+    init(favorites: [LocationData] = []) {
+        self.favorites = favorites
+    }
 
     func tableExists(_ name: String) async throws -> Bool {
         true
@@ -294,17 +291,17 @@ class MockDatabaseService: DatabaseService {
     }
 
     func fetchOneFavorite(_ location: DeviceLocation) async throws -> DeviceLocation? {
-        MockDatabaseService.favorites
+        favorites
             .first(where: { $0 == location })
             .map { LocationAdapter.device(from: $0) }
     }
 
     func fetchAllFavorites() async throws -> [DeviceLocation] {
-        fetchAllFavorites(db: MockDatabaseService.favorites)
+        fetchAllFavorites(db: favorites)
     }
 
     func fetchAllFavoritesPublisher() -> AnyPublisher<[DeviceLocation], Error> {
-        fetchAllFavorites(db: MockDatabaseService.favorites)
+        fetchAllFavorites(db: favorites)
             .publisher
             .collect()
             .setFailureType(to: Error.self)
@@ -317,7 +314,7 @@ class MockDatabaseService: DatabaseService {
 
     func fetchAllFavorites(matching locations: [DeviceLocation]) async throws -> [DeviceLocation] {
         return locations.filter { deviceLocation in
-            MockDatabaseService.favorites.contains(where: { locationData in
+            favorites.contains(where: { locationData in
                 deviceLocation.name == locationData.name
                 && deviceLocation.latitude == locationData.lat
                 && deviceLocation.longitude == locationData.long
@@ -326,11 +323,10 @@ class MockDatabaseService: DatabaseService {
     }
 
     func insertOneFavorite(_ location: DeviceLocation) async throws {
-        MockDatabaseService.favorites.append(LocationAdapter.data(from: location))
+        favorites.append(LocationAdapter.data(from: location))
     }
 
     func deleteOneFavorite(_ location: DeviceLocation) async throws {
-        MockDatabaseService.favorites.removeAll(where: { $0 == location })
+        favorites.removeAll(where: { $0 == location })
     }
-
 }

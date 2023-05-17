@@ -62,3 +62,13 @@ final class SQLiteDatabaseServiceTests: XCTestCase {
         XCTAssert(locationDoesNotExist)
     }
 }
+
+extension SQLiteDatabaseServiceTests {
+    private static func empty() throws -> SQLiteDatabaseService {
+        let dbQueue = try DatabaseQueue(
+            configuration: SQLiteDatabaseService.makeConfiguration()
+        )
+
+        return try SQLiteDatabaseService(dbQueue)
+    }
+}

@@ -8,6 +8,10 @@
 import Foundation
 import Combine
 
+enum DatabaseError: Error {
+    case noFoundColumn(String)
+}
+
 protocol DatabaseService {
     func tableExists(_ name: String) async throws -> Bool
     func columns(in name: String) async throws -> [String]

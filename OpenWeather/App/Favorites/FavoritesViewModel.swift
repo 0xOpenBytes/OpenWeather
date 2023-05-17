@@ -96,13 +96,13 @@ final class FavoritesViewModel: ViewModel<
             }
             .receive(on: RunLoop.main)
             .sink(
-                receiveCompletion: { completion in
+                receiveCompletion: { [weak self] completion in
                     if case let .failure(error) = completion {
-                        self.errorHandler.handle(error: error)
+                        self?.errorHandler.handle(error: error)
                     }
                 },
-                receiveValue: { summaries in
-                    self.summaries = summaries
+                receiveValue: { [weak self] summaries in
+                    self?.summaries = summaries
                 }
             )
     }
@@ -120,21 +120,4 @@ final class FavoritesViewModel: ViewModel<
             symbolName: weather.symbolName
         )
     }
-
-//    private func getWeatherSummary(
-//        for locations: [DeviceLocation]
-//    ) async throws -> [DeviceWeatherSummary] {
-//        try await locations
-//            .asyncCompactMap { location in
-//                guard
-//                    let weather = try? await self.capabilities.weather(for: location.location)
-//                else { return nil }
-//
-//                return DeviceWeatherSummary(
-//                    locationName: location.name,
-//                    temperature: weather.currentTemperature.abbreviatedAsProvided,
-//                    symbolName: weather.symbolName
-//                )
-//            }
-//    }
 }

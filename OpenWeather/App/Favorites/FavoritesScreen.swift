@@ -15,7 +15,6 @@ struct FavoritesScreen: View {
         viewModel.view { content in
             if content.summaries.isEmpty {
                 Text("No Favorites Available")
-
             } else {
                 List {
                     ForEach(content.summaries) { favorite in
