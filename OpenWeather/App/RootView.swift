@@ -69,7 +69,7 @@ struct RootView: View {
                         capabilities: .init(
                             locationProviding: LocationProvider(),
                             weatherProviding: OpenWeatherMapWeatherProvider(),
-                            database: SQLiteDatabaseService.shared
+                            databaseService: SQLiteDatabaseService.shared
                         ),
                         input: .init()
                     )

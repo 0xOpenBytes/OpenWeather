@@ -20,22 +20,22 @@ final class FavoritesViewModel: ViewModel<
             .init(
                 locationProviding: MockLocationProvider(),
                 weatherProviding: MockWeatherProvider(),
-                database: MockDatabaseService()
+                databaseService: MockDatabaseService()
             )
         }
 
         private let weatherProviding: WeatherProviding
         private let locationProviding: LocationProviding
-        private let database: DatabaseService
+        private let databaseService: DatabaseService
 
         init(
             locationProviding: LocationProviding,
             weatherProviding: WeatherProviding,
-            database: DatabaseService
+            databaseService: DatabaseService
         ) {
             self.locationProviding = locationProviding
             self.weatherProviding = weatherProviding
-            self.database = database
+            self.databaseService = databaseService
         }
 
         func locationName(for location: CLLocation) async throws -> String {
@@ -47,11 +47,11 @@ final class FavoritesViewModel: ViewModel<
         }
 
         func getFavorites() async throws -> [DeviceLocation] {
-            try await database.fetchAllFavorites()
+            try await databaseService.fetchAllFavorites()
         }
 
         func getFavoritesPublisher() -> AnyPublisher<[DeviceLocation], Error> {
-            database.fetchAllFavoritesPublisher()
+            databaseService.fetchAllFavoritesPublisher()
         }
     }
 
