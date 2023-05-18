@@ -9,7 +9,8 @@ import Foundation
 import Combine
 
 enum DatabaseError: Error {
-    case noFoundColumn(String)
+    case invalidColumnCount
+    case missingColumn(String)
 }
 
 protocol DatabaseService {

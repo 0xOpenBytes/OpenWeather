@@ -106,6 +106,10 @@ final class SearchLocationViewModel: ViewModel<
 
         super.init(capabilities: capabilities, input: input)
 
+        observeSearchKeywords()
+    }
+    
+    private func observeSearchKeywords() {
         searchSubscription = searchSubject
             .removeDuplicates()
             .debounce(for: 0.300, scheduler: RunLoop.main)

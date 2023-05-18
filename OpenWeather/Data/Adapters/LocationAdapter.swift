@@ -19,16 +19,19 @@ enum LocationAdapter {
     }
 
     static func device(from: Row) throws -> DeviceLocation {
+        guard from.count == 3 else {
+            throw DatabaseError.invalidColumnCount
+        }
         guard let name = from[0] as? String else {
-            throw DatabaseError.noFoundColumn("name")
+            throw DatabaseError.missingColumn("name")
         }
 
         guard let lat = from[1] as? Double else {
-            throw DatabaseError.noFoundColumn("lat")
+            throw DatabaseError.missingColumn("lat")
         }
 
         guard let long = from[2] as? Double else {
-            throw DatabaseError.noFoundColumn("long")
+            throw DatabaseError.missingColumn("long")
         }
 
         return DeviceLocation(

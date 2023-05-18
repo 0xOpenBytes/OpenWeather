@@ -70,7 +70,6 @@ final class FavoritesViewModel: ViewModel<
     }
 
     private let errorHandler: ErrorHandler
-    private var task: Task<Void, Never>?
     private var subscription: AnyCancellable?
 
     @Published private var summaries: [DeviceWeatherSummary] = []
@@ -86,6 +85,10 @@ final class FavoritesViewModel: ViewModel<
 
         super.init(capabilities: capabilities, input: input)
 
+        observeChangesInFavorites()
+    }
+    
+    private func observeChangesInFavorites() {
         subscription = self.capabilities
             .getFavoritesPublisher()
             .flatMap { $0
