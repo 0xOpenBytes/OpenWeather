@@ -178,7 +178,7 @@ extension SQLiteDatabaseService {
 
             return try SQLiteDatabaseService(dbPool)
         } catch {
-            // TODO: I think we should handle this in better way
+            // TODO: To be handled by ticket #23
             // Replace this implementation with code to handle the error appropriately.
             // fatalError() causes the application to generate a crash log and terminate.
             //
