@@ -11,7 +11,7 @@ import GRDB
 
 enum LocationAdapter {
     static func device(from: LocationData) -> DeviceLocation {
-        DeviceLocation(
+        .init(
             name: from.name,
             latitude: from.lat,
             longitude: from.long
@@ -19,22 +19,34 @@ enum LocationAdapter {
     }
 
     static func device(from: Row) throws -> DeviceLocation {
-        guard from.count == 3 else {
-            throw DatabaseError.invalidColumnCount
+        let columns: [String] = ["name", "lat", "long"]
+
+        guard from.count == columns.count else {
+            throw DatabaseError.invalidColumnCount(
+                columns, columns.count,
+                from.columnNames.map { "\($0)" }, from.columnNames.count
+            )
         }
+
+        for index in columns.indices {
+            guard from.hasColumn(columns[index]) else {
+                throw DatabaseError.missingColumn(columns[index])
+            }
+        }
+
         guard let name = from[0] as? String else {
-            throw DatabaseError.missingColumn("name")
+            throw DatabaseError.invalidColumnType("name", String.self)
         }
 
         guard let lat = from[1] as? Double else {
-            throw DatabaseError.missingColumn("lat")
+            throw DatabaseError.invalidColumnType("lat", Double.self)
         }
 
         guard let long = from[2] as? Double else {
-            throw DatabaseError.missingColumn("long")
+            throw DatabaseError.invalidColumnType("long", Double.self)
         }
 
-        return DeviceLocation(
+        return .init(
             name: name,
             latitude: lat,
             longitude: long

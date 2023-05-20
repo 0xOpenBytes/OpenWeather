@@ -108,7 +108,7 @@ final class SearchLocationViewModel: ViewModel<
 
         observeSearchKeywords()
     }
-    
+
     private func observeSearchKeywords() {
         searchSubscription = searchSubject
             .removeDuplicates()

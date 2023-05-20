@@ -87,7 +87,7 @@ final class FavoritesViewModel: ViewModel<
 
         observeChangesInFavorites()
     }
-    
+
     private func observeChangesInFavorites() {
         subscription = self.capabilities
             .getFavoritesPublisher()

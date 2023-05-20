@@ -8,9 +8,38 @@
 import Foundation
 import Combine
 
-enum DatabaseError: Error {
-    case invalidColumnCount
-    case missingColumn(String)
+enum DatabaseError: LocalizedError, Equatable {
+    case invalidColumnCount(
+        _ expected: [String], _ expectedCount: Int,
+        _ actual: [String], _ actualCount: Int
+    )
+
+    case missingColumn(_ name: String)
+    case invalidColumnType(_ name: String, _ type: Any.Type)
+
+    // swiftlint:disable line_length
+    var errorDescription: String? {
+        switch self {
+        case .invalidColumnCount(
+            let expected, let expectedCount,
+            let actual, let actualCount
+        ):
+            let expectedColumns = "\(expected.joined(separator: ","))"
+            let actualColumns = "\(actual.joined(separator: ","))"
+            return "\(#fileID): ColumnCountMismtach: Expected \(expectedCount) columns: \(expectedColumns), but returned \(actualCount) columns: '\(actualColumns)'."
+
+        case .missingColumn(let name):
+            return "\(#fileID): MissingColumn: '\(name)' column is missing."
+
+        case .invalidColumnType(let name, let type):
+            return "\(#fileID): InvalidColumnType: '\(name)' column should be of type '\(type)'"
+        }
+    }
+    // swiftlint:enable line_length
+
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.errorDescription == rhs.errorDescription
+    }
 }
 
 protocol DatabaseService {

@@ -15,6 +15,18 @@ struct LocationData: Codable {
     let long: Double
 
     var location: CLLocation { .init(latitude: lat, longitude: long) }
+
+    init(name: String, lat: Double, long: Double) {
+        self.name = name
+        self.lat = lat
+        self.long = long
+    }
+
+    init(name: String, location: CLLocation) {
+        self.name = name
+        self.lat = location.coordinate.latitude
+        self.long = location.coordinate.longitude
+    }
 }
 
 extension LocationData: TableRecord, FetchableRecord {

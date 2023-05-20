@@ -194,6 +194,7 @@ extension SQLiteDatabaseService {
     }
 }
 
+// swiftlint:disable line_length
 extension SQLiteDatabaseService {
     private static let sqlLogger = OSLog(subsystem: Bundle.main.bundleIdentifier!, category: "SQL")
 
@@ -236,6 +237,7 @@ extension SQLiteDatabaseService {
         return config
     }
 }
+// swiftlint:enable line_length
 
 extension SQLiteDatabaseService {
     /// The DatabaseMigrator that defines the database schema.
