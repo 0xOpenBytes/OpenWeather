@@ -125,15 +125,17 @@ final class SQLiteDatabaseServiceTests: XCTestCase {
         fetchedLocations = try await sut.fetchAllFavorites(matching: [locations[0], locations[1]])
 
         XCTAssertEqual(fetchedLocations.count, 2)
-        XCTAssertEqual(fetchedLocations[0], locations[0])
-        XCTAssertEqual(fetchedLocations[1], locations[1])
+
+        for index in fetchedLocations.indices {
+            XCTAssertEqual(fetchedLocations[index], locations[index])
+        }
 
         fetchedLocations = try await sut.fetchAllFavorites(matching: locations)
 
         XCTAssertEqual(fetchedLocations.count, locations.count)
-        XCTAssertEqual(fetchedLocations[0], locations[0])
-        XCTAssertEqual(fetchedLocations[1], locations[1])
-        XCTAssertEqual(fetchedLocations[2], locations[2])
+        for index in fetchedLocations.indices {
+            XCTAssertEqual(fetchedLocations[index], locations[index])
+        }
     }
 
     func testInsertOneFavorite() async throws {

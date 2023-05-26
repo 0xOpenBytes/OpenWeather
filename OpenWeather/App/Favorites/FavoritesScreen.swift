@@ -25,7 +25,7 @@ struct FavoritesScreen: View {
                         )
                         .swipeActions(allowsFullSwipe: false) {
                             Button(role: .destructive) {
-                                print("ToBeRemoved")
+                                viewModel.removeFavoriteLocation(favorite.location)
                             } label: {
                                 Label("Remove", systemImage: "heart.slash")
                             }

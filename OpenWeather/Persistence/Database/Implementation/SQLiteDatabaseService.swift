@@ -274,7 +274,7 @@ extension SQLiteDatabaseService {
 }
 
 final class MockDatabaseService: DatabaseService {
-    private var favorites: [LocationData]
+    @Published private var favorites: [LocationData]
 
     init(favorites: [LocationData] = []) {
         self.favorites = favorites
@@ -303,10 +303,14 @@ final class MockDatabaseService: DatabaseService {
     }
 
     func fetchAllFavoritesPublisher() -> AnyPublisher<[DeviceLocation], Error> {
-        fetchAllFavorites(db: favorites)
-            .publisher
-            .collect()
-            .setFailureType(to: Error.self)
+        $favorites
+            .flatMap {
+                $0
+                    .map(LocationAdapter.device(from:))
+                    .publisher
+                    .setFailureType(to: Error.self)
+                    .collect()
+            }
             .eraseToAnyPublisher()
     }
 
@@ -316,11 +320,7 @@ final class MockDatabaseService: DatabaseService {
 
     func fetchAllFavorites(matching locations: [DeviceLocation]) async throws -> [DeviceLocation] {
         return locations.filter { deviceLocation in
-            favorites.contains(where: { locationData in
-                deviceLocation.name == locationData.name
-                && deviceLocation.latitude == locationData.lat
-                && deviceLocation.longitude == locationData.long
-            })
+            favorites.contains(where: { $0 == deviceLocation })
         }
     }
 

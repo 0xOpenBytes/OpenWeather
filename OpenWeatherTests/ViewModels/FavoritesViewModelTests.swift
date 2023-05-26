@@ -12,30 +12,78 @@ import CoreLocation
 
 final class FavoritesViewModelTests: XCTestCase {
 
-//    func testOnViewDidAppear_emptyFavorites() {
-//        let sut: FavoritesViewModel = .mock
-//
-//        sut.onViewDidLoad()
-//    }
+    func testEmptyFavorites() async throws {
+        let sut: FavoritesViewModel = .mock
 
-    func testOnViewDidAppear_twoFavorites() {
+        try await Waiter(sut).wait(for: \.value.content.summaries) { summaries in
+            summaries.isEmpty
+        }
 
+        XCTAssertTrue(sut.content.summaries.isEmpty)
     }
 
-//    func testGetWeatherSummary() async throws {
-//        func testGetWeatherSummary(on sut: FavoritesViewModel, for locations: [CLLocation]) async throws {
-//            sut.getWeatherSummary(for: locations)
-//
-//            try await Waiter(sut).wait(for: \.value.content.summaries) { summaries in
-//                summaries.count == locations.count
-//            }
-//
-//            XCTAssertEqual(sut.content.summaries.count, locations.count)
-//        }
-//
-//        let sut: FavoritesViewModel = .mock
-//
-//        try await testGetWeatherSummary(on: sut, for: [.london, .cairo])
-//        try await testGetWeatherSummary(on: sut, for: [])
-//    }
+    func testNonEmptyFavorites() async throws {
+        let sut: FavoritesViewModel = .init(
+            capabilities: .init(
+                locationProviding: MockLocationProvider(),
+                weatherProviding: MockWeatherProvider(),
+                databaseService: MockDatabaseService(
+                    favorites: [.london, .newYork]
+                )
+            ),
+            input: .init()
+        )
+
+        try await Waiter(sut).wait(for: \.value.content.summaries) { summaries in
+            summaries.isEmpty == false
+        }
+
+        XCTAssertFalse(sut.content.summaries.isEmpty)
+    }
+
+    func testChangesInFavorites() async throws {
+        var favorites: [DeviceLocation] = [.london, .newYork]
+
+        let sut: FavoritesViewModel = .init(
+            capabilities: .init(
+                locationProviding: MockLocationProvider(),
+                weatherProviding: MockWeatherProvider(),
+                databaseService: MockDatabaseService(
+                    favorites: favorites.map(LocationAdapter.data(from:))
+                )
+            ),
+            input: .init()
+        )
+
+        try await assertEqualSummaries(sut: sut, favorites: favorites)
+
+        // test empty summaries
+
+        for _ in 0..<favorites.count {
+            sut.removeFavoriteLocation(favorites.removeFirst())
+
+            try await assertEqualSummaries(sut: sut, favorites: favorites)
+        }
+    }
+
+    private func assertEqualSummaries(
+        sut: FavoritesViewModel, favorites: [DeviceLocation]
+    ) async throws {
+        try await Waiter(sut).wait(for: \.value.content.summaries) { summaries in
+            return summaries.count == favorites.count
+        }
+
+        let summaries = sut.content.summaries
+        for index in summaries.indices {
+            XCTAssertEqual(
+                summaries.map { $0.location }[index],
+                favorites[index]
+            )
+        }
+    }
+
+    // TODO: To be done
+    func testWeatherSummaryForFavorites() {
+
+    }
 }

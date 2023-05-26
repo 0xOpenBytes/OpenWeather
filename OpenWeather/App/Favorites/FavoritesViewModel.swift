@@ -46,12 +46,12 @@ final class FavoritesViewModel: ViewModel<
             try await weatherProviding.weather(for: location)
         }
 
-        func getFavorites() async throws -> [DeviceLocation] {
-            try await databaseService.fetchAllFavorites()
-        }
-
         func getFavoritesPublisher() -> AnyPublisher<[DeviceLocation], Error> {
             databaseService.fetchAllFavoritesPublisher()
+        }
+
+        func removeFavorite(_ location: DeviceLocation) async throws {
+            try await databaseService.deleteOneFavorite(location)
         }
     }
 
@@ -118,9 +118,19 @@ final class FavoritesViewModel: ViewModel<
         else { return nil }
 
         return DeviceWeatherSummary(
-            locationName: location.name,
-            temperature: weather.currentTemperature.abbreviatedAsProvided,
-            symbolName: weather.symbolName
+            location: location,
+            weather: weather
         )
+    }
+
+    // TODO: @0xLeif I choose not to hold reference to Task, multiple calls for different locations should still all be executed and none cancelled, what do you think?
+    func removeFavoriteLocation(_ location: DeviceLocation) {
+        Task {
+            do {
+                try await capabilities.removeFavorite(location)
+            } catch {
+                errorHandler.handle(error: error)
+            }
+        }
     }
 }
