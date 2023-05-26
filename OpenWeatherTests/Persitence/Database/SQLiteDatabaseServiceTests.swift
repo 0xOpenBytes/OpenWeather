@@ -5,72 +5,172 @@
 //  SQLiteDatabaseServiceTests.swift
 //
 
+import GRDB
+import Test
 import XCTest
+import Combine
 @testable import OpenWeather
 
-// swiftlint: disable comment_spacing
-//final class SQLiteDatabaseServiceTests: XCTestCase {
-//    func testFavoritesSchema() async throws {
-//        let sut = try SQLiteDatabaseService.empty()
-//
-//        let tableName: String = "favorites"
-//        let tableExists = try await sut.tableExists(tableName)
-//
-//        XCTAssert(tableExists)
-//
-//        let columns = try await sut.columns(in: tableName)
-//
-//        XCTAssertEqual(columns, ["id", "name", "lat", "long", "created_at"])
-//    }
-//
-//    func testinsertOneFavorite() async throws {
-//        let sut = try SQLiteDatabaseService.empty()
-//
-//        let location: DeviceLocation = .init(
-//            name: "London",
-//            location: .london
-//        )
-//
-//        let locationDoesNotExist = try await sut.favoriteExists(location) == false
-//
-//        XCTAssert(locationDoesNotExist)
-//
-//        try await sut.insertOneFavorite(location)
-//
-//        let foundLocation = try await sut.fetchOneFavorite(location)
-//
-//        XCTAssert(location == foundLocation)
-//    }
-//
-//    func testRemoveFavoriteLocation() async throws {
-//        let sut = try SQLiteDatabaseService.empty()
-//
-//        let location: DeviceLocation = .init(
-//            name: "London",
-//            location: .london
-//        )
-//
-//        try await sut.insertOneFavorite(location)
-//
-//        let locationExists = try await sut.favoriteExists(location)
-//
-//        XCTAssert(locationExists)
-//
-//        try await sut.deleteOneFavorite(location)
-//
-//        let locationDoesNotExist = try await sut.favoriteExists(location) == false
-//
-//        XCTAssert(locationDoesNotExist)
-//    }
-//}
-//
-//extension SQLiteDatabaseServiceTests {
-//    private static func empty() throws -> SQLiteDatabaseService {
-//        let dbQueue = try DatabaseQueue(
-//            configuration: SQLiteDatabaseService.makeConfiguration()
-//        )
-//
-//        return try SQLiteDatabaseService(dbQueue)
-//    }
-//}
-// swiftlint: enable comment_spacing
+final class SQLiteDatabaseServiceTests: XCTestCase {
+
+    private final class LocationsPublisherResult {
+        var error: Error?
+        var locations: [DeviceLocation] = []
+    }
+
+    private var cancellables: Set<AnyCancellable>!
+
+    override func setUp() async throws {
+        try await super.setUp()
+
+        cancellables = []
+    }
+
+    func testFavoritesSchema() async throws {
+        let sut = try SQLiteDatabaseService.empty()
+
+        let tableName: String = "favorites"
+        let tableExists = try await sut.tableExists(tableName)
+
+        XCTAssert(tableExists)
+
+        let columns = try await sut.columns(in: tableName)
+
+        XCTAssertEqual(columns, ["id", "name", "lat", "long", "created_at"])
+    }
+
+    func testFetchOneFavorite() async throws {
+        let sut = try SQLiteDatabaseService.empty()
+
+        let location: DeviceLocation = .london
+
+        try await sut.insertOneFavorite(location)
+
+        let fetchedLocation = try await sut.fetchOneFavorite(location)
+
+        XCTAssertEqual(fetchedLocation, location)
+    }
+
+    func testFetchAllFavorites() async throws {
+        let sut = try SQLiteDatabaseService.empty()
+
+        let locations: [DeviceLocation] = [.london, .newYork, .cairo]
+
+        for location in locations {
+            try await sut.insertOneFavorite(location)
+        }
+
+        let fetchedLocations = try await sut.fetchAllFavorites()
+
+        XCTAssertEqual(fetchedLocations.count, locations.count)
+
+        for index in locations.indices {
+            XCTAssertEqual(fetchedLocations[index], locations[index])
+        }
+    }
+
+    func testFetchAllFavoritesPublisher() async throws {
+        let sut = try SQLiteDatabaseService.empty()
+
+        let emptyLocations: [DeviceLocation] = []
+        let someLocations: [DeviceLocation] = [.london]
+        let result: LocationsPublisherResult = .init()
+
+        sut.fetchAllFavoritesPublisher()
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .finished:
+                        break
+
+                    case .failure(let encounteredError):
+                        result.error = encounteredError
+                    }
+                },
+                receiveValue: { locations in
+                    result.locations = locations
+                }
+            )
+            .store(in: &cancellables)
+
+        for locations in [emptyLocations, someLocations] {
+            for location in locations {
+                try await sut.insertOneFavorite(location)
+            }
+
+            try await Waiter(result).wait(for: \.self) { _ in true }
+
+            XCTAssertNil(result.error)
+
+            for index in result.locations.indices {
+                XCTAssertEqual(result.locations[index], locations[index])
+            }
+        }
+    }
+
+    func testFetchAllFavoritesMatching() async throws {
+        let sut = try SQLiteDatabaseService.empty()
+
+        let locations: [DeviceLocation] = [.london, .newYork, .cairo]
+
+        for location in locations {
+            try await sut.insertOneFavorite(location)
+        }
+
+        var fetchedLocations = try await sut.fetchAllFavorites(matching: [locations[0]])
+
+        XCTAssertEqual(fetchedLocations.count, 1)
+        XCTAssertEqual(fetchedLocations[0], locations[0])
+
+        fetchedLocations = try await sut.fetchAllFavorites(matching: [locations[0], locations[1]])
+
+        XCTAssertEqual(fetchedLocations.count, 2)
+        XCTAssertEqual(fetchedLocations[0], locations[0])
+        XCTAssertEqual(fetchedLocations[1], locations[1])
+
+        fetchedLocations = try await sut.fetchAllFavorites(matching: locations)
+
+        XCTAssertEqual(fetchedLocations.count, locations.count)
+        XCTAssertEqual(fetchedLocations[0], locations[0])
+        XCTAssertEqual(fetchedLocations[1], locations[1])
+        XCTAssertEqual(fetchedLocations[2], locations[2])
+    }
+
+    func testInsertOneFavorite() async throws {
+        let sut = try SQLiteDatabaseService.empty()
+
+        let location: DeviceLocation = .london
+
+        try await sut.insertOneFavorite(location)
+
+        let locationDoesExist = try await sut.favoriteExists(location)
+
+        XCTAssertTrue(locationDoesExist)
+    }
+
+    func testDeleteFavoriteLocation() async throws {
+        let sut = try SQLiteDatabaseService.empty()
+
+        let location: DeviceLocation = .london
+
+        try await sut.insertOneFavorite(location)
+
+        try await sut.deleteOneFavorite(location)
+
+        let locationDoesNotExist = try await sut.favoriteExists(location) == false
+
+        XCTAssert(locationDoesNotExist)
+    }
+}
+
+// TODO: @0Lief should we put this in its own folder?
+
+extension SQLiteDatabaseService {
+    static func empty() throws -> SQLiteDatabaseService {
+        let dbQueue = try DatabaseQueue(
+            configuration: SQLiteDatabaseService.makeConfiguration()
+        )
+
+        return try SQLiteDatabaseService(dbQueue)
+    }
+}
