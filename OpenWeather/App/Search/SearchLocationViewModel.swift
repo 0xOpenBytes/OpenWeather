@@ -150,6 +150,7 @@ final class SearchLocationViewModel: ViewModel<
             do {
                 let updated = try await capabilities.toggleFavorite(for: location)
 
+                print(updated)
                 if let index = self.result.firstIndex(of: updated) {
                     await MainActor.run {
                         self.result[index] = updated

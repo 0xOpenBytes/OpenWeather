@@ -35,10 +35,10 @@ final class SearchLocationViewModelTests: XCTestCase {
         XCTAssertEqual(sut.content.result.count, 2)
     }
 
-    func testNonEmptySearchText_LowercasenewKeyword() async throws {
+    func testNonEmptySearchText_LowercaseNewKeyword() async throws {
         let sut: SearchLocationViewModel = .mock
 
-        sut.input.searchText = "new"
+        sut.input.searchText = "New"
 
         try await Waiter(sut).wait(for: \.value.content.result) { result in
             result.isEmpty == false
@@ -57,5 +57,34 @@ final class SearchLocationViewModelTests: XCTestCase {
         }
 
         XCTAssertEqual(sut.content.result.count, 1)
+    }
+
+    // TODO: @0xLeif is this enough test for toggleFavorite?
+    func testToggleFavoriteForLocation() async throws {
+        let sut: SearchLocationViewModel = .mock
+
+        sut.input.searchText = "Lon"
+
+        try await Waiter(sut).wait(for: \.value.content.result) { result in
+            result.isEmpty == false
+        }
+
+        for location in sut.content.result {
+            XCTAssertFalse(location.isFavorite)
+        }
+
+        for location in sut.content.result {
+            sut.toggleFavorite(for: location)
+
+            try await Waiter(sut).wait(for: \.value.content.result) { result in
+                result
+                    .first(where: { $0 == location })?
+                    .isFavorite == true
+            }
+        }
+
+        for location in sut.content.result {
+            XCTAssertTrue(location.isFavorite)
+        }
     }
 }
