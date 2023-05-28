@@ -16,3 +16,10 @@ struct DeviceWeatherSummary: Identifiable {
     var temperature: String { weather.currentTemperature.abbreviatedAsProvided }
     var symbolName: String { weather.symbolName }
 }
+
+extension DeviceWeatherSummary: Equatable {
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.location == rhs.location
+        && lhs.weather == rhs.weather
+    }
+}

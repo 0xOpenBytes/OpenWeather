@@ -20,7 +20,18 @@ struct WeatherProvider: WeatherProviding {
 }
 
 struct MockWeatherProvider: WeatherProviding {
+    private var map = Mock.locationWeatherMap
+
     func weather(for location: CLLocation) async throws -> DeviceWeather {
-        Mock.locationWeatherMap[location] ?? Mock.londonWeather
+        guard let weather = map.first(
+            where: { key, _ in
+                return key.lat == location.coordinate.latitude
+                && key.long == location.coordinate.longitude
+            }
+        )?.value else {
+            throw WeatherError.notAvailable(location: location)
+        }
+
+        return weather
     }
 }

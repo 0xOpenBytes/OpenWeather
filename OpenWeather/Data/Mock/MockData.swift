@@ -27,16 +27,16 @@ extension Mock {
     static let londonLocation: CLLocation = .london
     static let londonWeather: DeviceWeather = .london
 
-    static let locationWeatherMap: [CLLocation : DeviceWeather] = [
+    static let locationWeatherMap: [LocationData : DeviceWeather] = [
         .london : .london,
         .cairo : .cairo,
         .newYork: .newYork
     ]
 
     static let locationNameMap: [CLLocation : String] = [
-        .london : "London",
-        .cairo : "Cairo",
-        .newYork : "New York"
+        .london : LocationData.london.name,
+        .cairo : LocationData.cairo.name,
+        .newYork : LocationData.newYork.name
     ]
 
     static let locationsMap: [String : DeviceLocation] = [
@@ -81,6 +81,21 @@ extension DeviceLocation {
     static let cairo: DeviceLocation = LocationAdapter.device(from: .cairo)
     static let newYork: DeviceLocation = LocationAdapter.device(from: .newYork)
     static let newZealand: DeviceLocation = LocationAdapter.device(from: .newZealand)
+}
+
+extension DeviceWeatherSummary {
+    static let london: DeviceWeatherSummary = .init(
+        location: .london,
+        weather: .london
+    )
+    static let cairo: DeviceWeatherSummary = .init(
+        location: .cairo,
+        weather: .cairo
+    )
+    static let newYork: DeviceWeatherSummary = .init(
+        location: .newYork,
+        weather: .newYork
+    )
 }
 
 extension DeviceWeather {

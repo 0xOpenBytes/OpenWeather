@@ -40,3 +40,17 @@ extension DeviceLocation: Equatable {
         && lhs.longitude == rhs.longitude
     }
 }
+
+extension DeviceLocation: CustomStringConvertible {
+    var description: String {
+        """
+        {
+            id: \(id),
+            name: \(name),
+            latitude: \(latitude),
+            longitude: \(longitude),
+            isFavorite: \(isFavorite)
+        }
+        """
+    }
+}

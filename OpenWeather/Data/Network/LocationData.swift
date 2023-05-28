@@ -33,6 +33,20 @@ extension LocationData: TableRecord, FetchableRecord {
     static var databaseTableName: String = "favorites"
 }
 
+extension LocationData: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(lat)
+        hasher.combine(long)
+    }
+
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.name == rhs.name
+        && lhs.lat == rhs.lat
+        && lhs.long == rhs.long
+    }
+}
+
 extension LocationData: CustomStringConvertible {
     var description: String {
         """
@@ -42,13 +56,5 @@ extension LocationData: CustomStringConvertible {
             longitude: \(long)
         }
         """
-    }
-}
-
-extension LocationData: Equatable {
-    static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.name == rhs.name
-        && lhs.lat == rhs.lat
-        && lhs.long == rhs.long
     }
 }

@@ -23,15 +23,8 @@ final class FavoritesViewModelTests: XCTestCase {
     }
 
     func testNonEmptyFavorites() async throws {
-        let sut: FavoritesViewModel = .init(
-            capabilities: .init(
-                locationProviding: MockLocationProvider(),
-                weatherProviding: MockWeatherProvider(),
-                databaseService: MockDatabaseService(
-                    favorites: [.london, .newYork]
-                )
-            ),
-            input: .init()
+        let sut: FavoritesViewModel = makeMockViewModel(
+            withFavorites: [.london, .newYork]
         )
 
         try await Waiter(sut).wait(for: \.value.content.summaries) { summaries in
@@ -44,26 +37,48 @@ final class FavoritesViewModelTests: XCTestCase {
     func testChangesInFavorites() async throws {
         var favorites: [DeviceLocation] = [.london, .newYork]
 
-        let sut: FavoritesViewModel = .init(
-            capabilities: .init(
-                locationProviding: MockLocationProvider(),
-                weatherProviding: MockWeatherProvider(),
-                databaseService: MockDatabaseService(
-                    favorites: favorites.map(LocationAdapter.data(from:))
-                )
-            ),
-            input: .init()
+        let sut: FavoritesViewModel = makeMockViewModel(
+            withFavorites: favorites
         )
 
         try await assertEqualSummaries(sut: sut, favorites: favorites)
-
-        // test empty summaries
 
         for _ in 0..<favorites.count {
             sut.removeFavoriteLocation(favorites.removeFirst())
 
             try await assertEqualSummaries(sut: sut, favorites: favorites)
         }
+    }
+
+    func testWeatherSummaryForFavorites() async throws {
+        let summaries: [DeviceWeatherSummary] = [.newYork]
+
+        let sut: FavoritesViewModel = makeMockViewModel(
+            withFavorites: summaries.map { $0.location }
+        )
+
+        try await Waiter(sut).wait(for: \.value.content.summaries) { result in
+            result.isEmpty == false
+        }
+
+        XCTAssertEqual(sut.content.summaries, summaries)
+    }
+
+    // MARK: - Helpers
+
+    private func makeMockViewModel(
+        withFavorites favorites: [DeviceLocation]
+    ) -> FavoritesViewModel {
+        return .init(
+            capabilities: .init(
+                locationProviding: MockLocationProvider(),
+                weatherProviding: MockWeatherProvider(),
+                databaseService: MockDatabaseService(
+                    favorites: favorites.mapToData()
+                )
+            ),
+            input: .init()
+        )
     }
 
     private func assertEqualSummaries(
@@ -80,10 +95,5 @@ final class FavoritesViewModelTests: XCTestCase {
                 favorites[index]
             )
         }
-    }
-
-    // TODO: To be done
-    func testWeatherSummaryForFavorites() {
-
     }
 }
