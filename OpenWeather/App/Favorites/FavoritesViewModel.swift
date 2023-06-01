@@ -122,8 +122,7 @@ final class FavoritesViewModel: ViewModel<
             weather: weather
         )
     }
-
-    // TODO: @0xLeif I choose not to hold reference to Task, multiple calls for different locations should still all be executed and none cancelled, what do you think?
+    
     func removeFavoriteLocation(_ location: DeviceLocation) {
         Task {
             do {

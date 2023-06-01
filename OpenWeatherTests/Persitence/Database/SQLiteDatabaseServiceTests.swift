@@ -5,7 +5,6 @@
 //  SQLiteDatabaseServiceTests.swift
 //
 
-import GRDB
 import Test
 import XCTest
 import Combine
@@ -162,17 +161,5 @@ final class SQLiteDatabaseServiceTests: XCTestCase {
         let locationDoesNotExist = try await sut.favoriteExists(location) == false
 
         XCTAssert(locationDoesNotExist)
-    }
-}
-
-// TODO: @0Lief should we put this in its own folder?
-
-extension SQLiteDatabaseService {
-    static func empty() throws -> SQLiteDatabaseService {
-        let dbQueue = try DatabaseQueue(
-            configuration: SQLiteDatabaseService.makeConfiguration()
-        )
-
-        return try SQLiteDatabaseService(dbQueue)
     }
 }
