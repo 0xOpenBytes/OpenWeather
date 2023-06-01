@@ -28,7 +28,7 @@ packages:
     from: 0.1.0
   GRDB:
     url: https://github.com/groue/GRDB.swift.git
-    branch: 6.14.0
+    from: 6.14.0
   
 schemes:
   OpenWeather:

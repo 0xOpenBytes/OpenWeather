@@ -116,6 +116,31 @@ struct SQLiteDatabaseService: DatabaseService {
         }
     }
 
+    func fetchAllFavoritesPublisher(matching locations: [DeviceLocation]) -> AnyPublisher<[DeviceLocation], Error> {
+        ValueObservation.tracking { db in
+            let arguments = locations.reduce(
+                into: (names: [String](), lats: [Double](), longs: [Double]())
+            ) { partialResult, location in
+                partialResult.names.append(location.name)
+                partialResult.lats.append(location.latitude)
+                partialResult.longs.append(location.longitude)
+            }
+
+            let request: SQLRequest<LocationData> = """
+                SELECT name, lat, long FROM favorites
+                WHERE name IN \(arguments.names)
+                AND lat IN \(arguments.lats)
+                AND long IN \(arguments.longs)
+                """
+
+            return try request
+                .fetchAll(db)
+                .mapToDevice()
+        }
+        .publisher(in: dbQueue)
+        .eraseToAnyPublisher()
+    }
+
     func insertOneFavorite(_ location: DeviceLocation) async throws {
         try await dbQueue.write { db in
             try db.execute(
@@ -322,6 +347,17 @@ final class MockDatabaseService: DatabaseService {
         return locations.filter { deviceLocation in
             favorites.contains(where: { $0 == deviceLocation })
         }
+    }
+
+    func fetchAllFavoritesPublisher(matching locations: [DeviceLocation]) -> AnyPublisher<[DeviceLocation], Error> {
+        locations
+            .filter { deviceLocation in
+                favorites.contains(where: { $0 == deviceLocation })
+            }
+            .publisher
+            .collect()
+            .setFailureType(to: Error.self)
+            .eraseToAnyPublisher()
     }
 
     func insertOneFavorite(_ location: DeviceLocation) async throws {

@@ -45,6 +45,14 @@ final class SearchLocationViewModel: ViewModel<
             return locations
         }
 
+        func getLocationsPublisher(query: String) async throws -> AnyPublisher<[DeviceLocation], Error> {
+            var locations = try await locationProviding.locations(for: query)
+
+            return databaseService
+                .fetchAllFavoritesPublisher(matching: locations)
+                .eraseToAnyPublisher()
+        }
+
         func toggleFavorite(for location: DeviceLocation) async throws -> DeviceLocation {
             var updated = location
             if try await databaseService.favoriteExists(updated) {
