@@ -34,17 +34,6 @@ final class SearchLocationViewModel: ViewModel<
             self.databaseService = databaseService
         }
 
-        func getLocations(query: String) async throws -> [DeviceLocation] {
-            var locations = try await locationProviding.locations(for: query)
-            let favorites = try await databaseService.fetchAllFavorites(matching: locations)
-
-            for index in locations.indices {
-                locations[index].isFavorite = favorites.contains(locations[index])
-            }
-
-            return locations
-        }
-
         func getLocationsPublisher(query: String) async throws -> AnyPublisher<[DeviceLocation], Error> {
             var locations = try await locationProviding.locations(for: query)
 
@@ -156,31 +145,6 @@ final class SearchLocationViewModel: ViewModel<
                     self.result = result
                 }
             )
-        }
-    }
-
-    private func getLocations(searchText: String) {
-        searchTask?.cancel()
-
-        guard searchText.isEmpty == false else {
-            self.result = []
-            return
-        }
-
-        searchTask = Task {
-            do {
-                guard searchTask?.isCancelled == false else { return }
-
-                let result = try await capabilities.getLocations(query: searchText)
-
-                guard searchTask?.isCancelled == false else { return }
-
-                await MainActor.run {
-                    self.result = result
-                }
-            } catch {
-                errorHandler.handle(error: error)
-            }
         }
     }
 
