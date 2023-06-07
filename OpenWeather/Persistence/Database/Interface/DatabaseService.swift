@@ -52,7 +52,9 @@ protocol DatabaseService {
     func fetchAllFavorites() async throws -> [DeviceLocation]
     func fetchAllFavoritesPublisher() -> AnyPublisher<[DeviceLocation], Error>
     func fetchAllFavorites(matching locations: [DeviceLocation]) async throws -> [DeviceLocation]
-    func fetchAllFavoritesPublisher(matching locations: [DeviceLocation]) -> AnyPublisher<[DeviceLocation], Error>
+    func fetchAllFavoritesPublisher(
+        matching locations: [DeviceLocation]
+    ) -> AnyPublisher<[DeviceLocation], Error>
     func insertOneFavorite(_ location: DeviceLocation) async throws
     func deleteOneFavorite(_ location: DeviceLocation) async throws
 }

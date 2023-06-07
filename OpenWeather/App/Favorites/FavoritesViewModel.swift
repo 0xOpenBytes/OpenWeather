@@ -122,7 +122,7 @@ final class FavoritesViewModel: ViewModel<
             weather: weather
         )
     }
-    
+
     func removeFavoriteLocation(_ location: DeviceLocation) {
         Task {
             do {

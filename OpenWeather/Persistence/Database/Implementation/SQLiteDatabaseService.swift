@@ -116,7 +116,9 @@ struct SQLiteDatabaseService: DatabaseService {
         }
     }
 
-    func fetchAllFavoritesPublisher(matching locations: [DeviceLocation]) -> AnyPublisher<[DeviceLocation], Error> {
+    func fetchAllFavoritesPublisher(
+        matching locations: [DeviceLocation]
+    ) -> AnyPublisher<[DeviceLocation], Error> {
         ValueObservation.tracking { db in
             let arguments = locations.reduce(
                 into: (names: [String](), lats: [Double](), longs: [Double]())
@@ -349,7 +351,9 @@ final class MockDatabaseService: DatabaseService {
         }
     }
 
-    func fetchAllFavoritesPublisher(matching locations: [DeviceLocation]) -> AnyPublisher<[DeviceLocation], Error> {
+    func fetchAllFavoritesPublisher(
+        matching locations: [DeviceLocation]
+    ) -> AnyPublisher<[DeviceLocation], Error> {
         locations
             .filter { deviceLocation in
                 favorites.contains(where: { $0 == deviceLocation })

@@ -48,8 +48,20 @@ final class SearchLocationViewModel: ViewModel<
         func getLocationsPublisher(query: String) async throws -> AnyPublisher<[DeviceLocation], Error> {
             var locations = try await locationProviding.locations(for: query)
 
+            if Task.isCancelled {
+                return Empty<[DeviceLocation], Error>()
+                    .eraseToAnyPublisher()
+            }
+
             return databaseService
                 .fetchAllFavoritesPublisher(matching: locations)
+                .map { favorites in
+                    for index in locations.indices {
+                        locations[index].isFavorite = favorites.contains(locations[index])
+                    }
+
+                    return locations
+                }
                 .eraseToAnyPublisher()
         }
 
@@ -98,6 +110,7 @@ final class SearchLocationViewModel: ViewModel<
     private var searchTask: Task<Void, Never>?
     private var toggleFavoriteTask: Task<Void, Never>?
     private var searchSubscription: AnyCancellable?
+    private var locationsSubscription: AnyCancellable?
 
     @Published private var result: [DeviceLocation] = []
 
@@ -121,9 +134,29 @@ final class SearchLocationViewModel: ViewModel<
         searchSubscription = searchSubject
             .removeDuplicates()
             .debounce(for: 0.300, scheduler: RunLoop.main)
-            .sink { [weak self] searchText in
-                self?.getLocations(searchText: searchText)
-            }
+            .sink(receiveValue: onSearchKeyboard(_:))
+    }
+
+    private func onSearchKeyboard(_ keyword: String) {
+        guard keyword.isEmpty == false else {
+            self.result = []
+            return
+        }
+
+        Task {
+            locationsSubscription?.cancel()
+
+            locationsSubscription = try await self.capabilities.getLocationsPublisher(
+                query: keyword
+            )
+            .receive(on: RunLoop.main)
+            .sink(
+                receiveCompletion: { _ in },
+                receiveValue: { result in
+                    self.result = result
+                }
+            )
+        }
     }
 
     private func getLocations(searchText: String) {
