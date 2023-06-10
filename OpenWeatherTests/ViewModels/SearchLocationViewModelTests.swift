@@ -35,10 +35,10 @@ final class SearchLocationViewModelTests: XCTestCase {
         XCTAssertEqual(sut.content.result.count, 2)
     }
 
-    func testNonEmptySearchText_LowercasenewKeyword() async throws {
+    func testNonEmptySearchText_LowercaseNewKeyword() async throws {
         let sut: SearchLocationViewModel = .mock
 
-        sut.input.searchText = "new"
+        sut.input.searchText = "New"
 
         try await Waiter(sut).wait(for: \.value.content.result) { result in
             result.isEmpty == false
@@ -57,5 +57,63 @@ final class SearchLocationViewModelTests: XCTestCase {
         }
 
         XCTAssertEqual(sut.content.result.count, 1)
+    }
+
+    func testAddSearchResultToFavorites() async throws {
+        let sut: SearchLocationViewModel = .mock
+
+        sut.input.searchText = "Lon"
+
+        try await Waiter(sut).wait(for: \.value.content.result) { result in
+            result.isEmpty == false
+        }
+
+        for location in sut.content.result {
+            XCTAssertFalse(location.isFavorite)
+        }
+
+        for location in sut.content.result {
+            sut.toggleFavorite(for: location)
+
+            try await Waiter(sut).wait(for: \.value.content.result) { result in
+                result
+                    .first(where: { $0 == location })?
+                    .isFavorite == true
+            }
+        }
+
+        for location in sut.content.result {
+            XCTAssertTrue(location.isFavorite)
+        }
+    }
+
+    func testRemoveSearchResultFromFavorites() async throws {
+        let sut: SearchLocationViewModel = .mock
+
+        sut.input.searchText = "Lon"
+
+        try await Waiter(sut).wait(for: \.value.content.result) { result in
+            result.isEmpty == false
+        }
+
+        for location in sut.content.result {
+            // Expected to add search result to favorites
+            sut.toggleFavorite(for: location)
+
+            try await Waiter(sut).wait(for: \.value.content.result) { result in
+                result
+                    .first(where: { $0 == location })?
+                    .isFavorite == true
+            }
+
+            // Expected to remove search result from favorites
+            sut.toggleFavorite(for: location)
+
+            try await Waiter(sut).wait(for: \.value.content.result) { result in
+                result
+                    .first(where: { $0 == location })?
+                    .isFavorite == false
+            }
+        }
     }
 }

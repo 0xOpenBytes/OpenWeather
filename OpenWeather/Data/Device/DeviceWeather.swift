@@ -17,14 +17,68 @@ struct DeviceWeather: Identifiable {
     let hourlyForecast: [DeviceHourlyForecast]
 }
 
-struct DeviceWind {
+extension DeviceWeather: Equatable {
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.currentTemperature == rhs.currentTemperature
+        && lhs.realFeel == rhs.realFeel
+        && lhs.uv == rhs.uv
+        && lhs.symbolName == rhs.symbolName
+        && lhs.wind == rhs.wind
+        && lhs.hourlyForecast == rhs.hourlyForecast
+    }
+}
+
+extension DeviceWeather: CustomStringConvertible {
+    var description: String {
+        """
+        {
+            currentTemperature: \(currentTemperature),
+            realFeel: \(realFeel),
+            uv: \(uv),
+            symbolName: \(symbolName),
+            wind: \(wind),
+            hourlyForecast: \(hourlyForecast)
+        }
+        """
+    }
+}
+
+// MARK: - DeviceWind
+
+struct DeviceWind: Equatable {
     let direction: Measurement<UnitAngle>
     let speed: Measurement<UnitSpeed>
     let gust: Measurement<UnitSpeed>?
 }
 
-struct DeviceHourlyForecast {
+extension DeviceWind: CustomStringConvertible {
+    var description: String {
+        """
+        {
+            direction: \(direction),
+            speed: \(speed),
+            gust: \(String(describing: gust ?? .none))
+        }
+        """
+    }
+}
+
+// MARK: - DeviceHourlyForecast
+
+struct DeviceHourlyForecast: Equatable {
     let date: Date
     let temperature: Measurement<UnitTemperature>
     let symbolName: String
+}
+
+extension DeviceHourlyForecast: CustomStringConvertible {
+    var description: String {
+        """
+        {
+            date: \(date),
+            temperature: \(temperature),
+            symbolName: \(symbolName)
+        }
+        """
+    }
 }

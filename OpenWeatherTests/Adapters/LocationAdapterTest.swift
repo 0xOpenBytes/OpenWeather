@@ -5,19 +5,172 @@
 //  LocationAdapterTest.swift
 //
 
+import GRDB
 import XCTest
+import CoreLocation
 @testable import OpenWeather
 
 final class LocationAdapterTest: XCTestCase {
-    func testAdapter() {
-        let networkModel = NetworkLocation(
-            name: "London",
-            location: .london
+
+    private let expectedColumns: [String] = ["name", "lat", "long"]
+
+    func testFromLocationData() {
+        let locationData: LocationData = .london
+
+        let deviceLocation = LocationAdapter.device(from: locationData)
+
+        XCTAssertEqual(deviceLocation.name, locationData.name)
+        XCTAssertEqual(deviceLocation.latitude, locationData.lat)
+        XCTAssertEqual(deviceLocation.longitude, locationData.long)
+    }
+
+    func testFromDeviceLocation() {
+        let deviceLocation: DeviceLocation = .london
+
+        let locationData = LocationAdapter.data(from: deviceLocation)
+
+        XCTAssertEqual(locationData.name, deviceLocation.name)
+        XCTAssertEqual(locationData.lat, deviceLocation.latitude)
+        XCTAssertEqual(locationData.long, deviceLocation.longitude)
+    }
+
+    func testColumnCountFromDatabaseRow() {
+        let london: LocationData = .london
+
+        var row = Row()
+
+        tryAssertInvalidColumnCount(from: row)
+
+        row = Row(dictionaryLiteral: ("name", london.name))
+
+        tryAssertInvalidColumnCount(from: row)
+
+        row = createLocationRow(
+            name: london.name,
+            lat: london.lat,
+            long: london.long
         )
 
-        let deviceModel = LocationAdapter.device(from: networkModel)
+        tryAssertCorrectColumnCount(from: row)
+    }
 
-        XCTAssertEqual(deviceModel.name, networkModel.name)
-        XCTAssertEqual(deviceModel.location, networkModel.location)
+    func testMissingColumnFromDatabaseRow() {
+        let london: LocationData = .london
+        let name = london.name
+        let lat = london.lat
+        let long = london.long
+
+        var row = Row(
+            dictionaryLiteral: ("theName", name), ("lat", lat), ("long", long)
+        )
+
+        tryAssertMissingColumn("name", from: row)
+
+        row = Row(
+            dictionaryLiteral: ("name", name), ("latitude", lat), ("long", long)
+        )
+
+        tryAssertMissingColumn("lat", from: row)
+
+        row = Row(
+            dictionaryLiteral: ("name", name), ("lat", lat), ("longitude", long)
+        )
+
+        tryAssertMissingColumn("long", from: row)
+    }
+
+    func testInvalidColumnTypeFromDatabaseRow() {
+        let london: LocationData = .london
+
+        var row = createLocationRow(name: 10)
+
+        tryAssertInvalidColumnType("name", type: String.self, from: row)
+
+        row = createLocationRow(
+            name: london.name,
+            lat: false
+        )
+
+        tryAssertInvalidColumnType("lat", type: Double.self, from: row)
+
+        row = createLocationRow(
+            name: london.name,
+            lat: london.lat,
+            long: "invalid"
+        )
+
+        tryAssertInvalidColumnType("long", type: Double.self, from: row)
+    }
+
+    // MARK: - Helpers
+
+    // swiftlint:disable force_cast
+    private func tryAssertCorrectColumnCount(from row: Row) {
+        XCTAssertNoThrow(try LocationAdapter.device(from: row))
+    }
+
+    private func tryAssertInvalidColumnCount(from row: Row) {
+        let expect = expectation(description: #function)
+
+        XCTAssertThrowsError(try LocationAdapter.device(from: row)) { error in
+            XCTAssertNotNil(error as? OpenWeather.DatabaseError)
+
+            XCTAssertEqual(
+                error as! OpenWeather.DatabaseError,
+                OpenWeather.DatabaseError.invalidColumnCount(
+                    expectedColumns, expectedColumns.count,
+                    row.columnNames.map { "\($0)"}, row.columnNames.count
+                )
+            )
+
+            expect.fulfill()
+        }
+
+        waitForExpectations(timeout: 1)
+    }
+
+    private func tryAssertInvalidColumnType(_ column: String, type: Any.Type, from row: Row) {
+        let expect = expectation(description: #function)
+
+        XCTAssertThrowsError(try LocationAdapter.device(from: row)) { error in
+            XCTAssertNotNil(error as? OpenWeather.DatabaseError)
+
+            XCTAssertEqual(
+                error as! OpenWeather.DatabaseError,
+                OpenWeather.DatabaseError.invalidColumnType(column, type)
+            )
+
+            expect.fulfill()
+        }
+
+        waitForExpectations(timeout: 1)
+    }
+
+    private func tryAssertMissingColumn(_ column: String, from row: Row) {
+        let expect = expectation(description: #function)
+
+        XCTAssertThrowsError(try LocationAdapter.device(from: row)) { error in
+            XCTAssertNotNil(error as? OpenWeather.DatabaseError)
+
+            XCTAssertEqual(
+                error as! OpenWeather.DatabaseError,
+                OpenWeather.DatabaseError.missingColumn(column)
+            )
+
+            expect.fulfill()
+        }
+
+        waitForExpectations(timeout: 1)
+    }
+    // swiftlint:enable force_cast
+
+    private func createLocationRow(
+        name: DatabaseValueConvertible? = nil,
+        lat: DatabaseValueConvertible? = nil,
+        long: DatabaseValueConvertible? = nil
+    ) -> Row {
+        .init(
+            dictionaryLiteral: ("name", name), ("lat", lat), ("long", long)
+        )
     }
 }

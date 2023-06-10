@@ -8,6 +8,23 @@
 import Foundation
 import CoreLocation
 
+enum WeatherError: LocalizedError, Equatable {
+    case notAvailable(location: CLLocation)
+
+    // swiftlint:disable line_length
+    var errorDescription: String? {
+        switch self {
+        case .notAvailable(let location):
+            return "\(#fileID): There is no weather data available for location: \(location.coordinate.latitude),\(location.coordinate.longitude)"
+        }
+    }
+    // swiftlint:enable line_length
+
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.errorDescription == rhs.errorDescription
+    }
+}
+
 protocol WeatherProviding: CurrentWeatherProviding { }
 
 protocol CurrentWeatherProviding {

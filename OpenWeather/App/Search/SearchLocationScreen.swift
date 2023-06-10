@@ -18,19 +18,18 @@ import OpenBytesNavigation
 import SwiftUI
 
 struct SearchLocationScreen: View {
-    @ObservedObject var viewModel: SearchLocationViewModel
-
-    init(viewModel: SearchLocationViewModel) {
-        self.viewModel = viewModel
-    }
+    @StateObject var viewModel: SearchLocationViewModel
 
     var body: some View {
         viewModel.view { content in
             List {
                 ForEach(content.result) { location in
-                    LocationResultItem(name: location.name)
+                    LocationResultItem(location: location) {
+                        self.viewModel.toggleFavorite(for: location)
+                    }
                 }
             }
+            .buttonStyle(.borderless)
             .searchable(
                 text: viewModel.binding(\.searchText),
                 prompt: "Search by name or zipcode"

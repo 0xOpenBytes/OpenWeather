@@ -18,6 +18,10 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app requires access to your location at all times to provide you with accurate weather forecasts and alerts for your area.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app requires access to your location while you are using it to provide you with accurate weather forecasts and alerts for your area.</string>
 	<key>UILaunchScreen</key>
 	<array>
 		<dict>

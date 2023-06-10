@@ -27,23 +27,23 @@ extension Mock {
     static let londonLocation: CLLocation = .london
     static let londonWeather: DeviceWeather = .london
 
-    static let locationWeatherMap: [CLLocation : DeviceWeather] = [
+    static let locationWeatherMap: [LocationData : DeviceWeather] = [
         .london : .london,
         .cairo : .cairo,
         .newYork: .newYork
     ]
 
     static let locationNameMap: [CLLocation : String] = [
-        .london : "London",
-        .cairo : "Cairo",
-        .newYork : "New York"
+        .london : LocationData.london.name,
+        .cairo : LocationData.cairo.name,
+        .newYork : LocationData.newYork.name
     ]
 
     static let locationsMap: [String : DeviceLocation] = [
-        "London": DeviceLocation(name: "London", location: .london),
+        "London": .london,
         "4240120": DeviceLocation(name: "Manial Al-Rodha", location: .cairo),
-        "New York": DeviceLocation(name: "New York", location: .newYork),
-        "New Zealand": DeviceLocation(name: "New Zealand", location: .newZealand)
+        "New York": .newYork,
+        "New Zealand": .newZealand
     ]
 }
 
@@ -52,6 +52,50 @@ extension CLLocation {
     static let cairo: CLLocation = .init(latitude: 30.0444, longitude: 31.2357)
     static let newYork: CLLocation = .init(latitude: 40.7128, longitude: 74.0060)
     static let newZealand: CLLocation = .init(latitude: 40.9006, longitude: 174.8860)
+}
+
+extension LocationData {
+    static let london: LocationData = .init(
+        name: "London",
+        location: .london
+    )
+
+    static let cairo: LocationData = .init(
+        name: "Cairo",
+        location: .cairo
+    )
+
+    static let newYork: LocationData = .init(
+        name: "New York",
+        location: .newYork
+    )
+
+    static let newZealand: LocationData = .init(
+        name: "New Zealand",
+        location: .newZealand
+    )
+}
+
+extension DeviceLocation {
+    static let london: DeviceLocation = LocationAdapter.device(from: .london)
+    static let cairo: DeviceLocation = LocationAdapter.device(from: .cairo)
+    static let newYork: DeviceLocation = LocationAdapter.device(from: .newYork)
+    static let newZealand: DeviceLocation = LocationAdapter.device(from: .newZealand)
+}
+
+extension DeviceWeatherSummary {
+    static let london: DeviceWeatherSummary = .init(
+        location: .london,
+        weather: .london
+    )
+    static let cairo: DeviceWeatherSummary = .init(
+        location: .cairo,
+        weather: .cairo
+    )
+    static let newYork: DeviceWeatherSummary = .init(
+        location: .newYork,
+        weather: .newYork
+    )
 }
 
 extension DeviceWeather {

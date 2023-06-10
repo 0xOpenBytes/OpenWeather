@@ -13,5 +13,5 @@ struct LocationNameResponse {
 }
 
 struct LocationSearchResponse {
-    let result: [NetworkLocation]
+    let result: [LocationData]
 }
